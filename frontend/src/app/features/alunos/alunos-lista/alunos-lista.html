@@ -1,0 +1,73 @@
+<div class="cabecalho=pagina">
+    <h1>Alunos</h1>
+    <a class="botao" routerLink="/alunos/novo">Novo aluno</a>
+</div>
+
+@if (sucesso()) {
+<p class="alerta sucesso" role="status">{{ sucesso() }}</p>
+}
+
+
+@if (erro()) {
+<p class="alerta erro" role="alert">{{ erro() }}</p>
+}
+
+<div class="barra-filtros">
+    <label for="objetivo">Filtrar por objetivo</label>
+
+    <select id="objetivo" [value]="objetivo()" (change)="filtrar($event)">
+        <option value="">Todos os objetivos</option>
+
+        @for (opcao of opcoesObjetivo; track opcao) {
+        <option [value]="opcao">{{ opcao }}</option>
+        }
+    </select>
+</div>
+
+@if (carregando()) {
+<p role="status">Carregando alunos...</p>
+} @else if (erro() && alunos().length === 0) {
+<button type="button" (click)="carregar()">
+    Tentar novamente
+</button>
+} @else if (alunosFiltrados().length === 0) {
+<p role="status">Nenhum aluno encontrado.</p>
+} @else {
+<div class="tabela-container">
+    <table class="tabela">
+        <caption>Alunos ativos</caption>
+
+        <thead>
+            <tr>
+                <th scope="col">Nome</th>
+                <th scope="col">E-mail</th>
+                <th scope="col">Telefone</th>
+                <th scope="col">Data de nascimento</th>
+                <th scope="col">Ações</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @for (aluno of alunosFiltrados(); track aluno._id) {
+            <tr>
+                <td>{{ aluno.nome }}</td>
+                <td>{{ aluno.email }}</td>
+                <td>{{ aluno.telefone }}</td>
+                <td>
+                    {{ aluno.dataNascimento | date: 'dd/MM/yyyy' : 'UTC' }}
+                </td>
+                <td>
+                    <a [routerLink]="['/alunos', aluno._id, 'editar']">
+                        Editar
+                    </a>
+
+                    <button class="botao perigo" type="button" (click)="inativar(aluno)">
+                        Inativar
+                    </button>
+                </td>
+            </tr>
+            }
+        </tbody>
+    </table>
+</div>
+}
