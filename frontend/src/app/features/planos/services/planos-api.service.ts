@@ -3,42 +3,42 @@ import { inject, Injectable } from '@angular/core';
 import { catchError, map, Observable, throwError } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { RespostaApi } from '../../../core/models/resposta-api';
-import { Categoria, Produto, ProdutoEntrada } from '../produto.model';
-import { ProdutosService } from './produtos.service';
+import { DuracaoMeses, Plano, PlanoEntrada } from '../plano.model';
+import { PlanosService } from './planos.service';
 
 /**
  * Serviço que conversa com a API NestJS de verdade (PDF 02, cap. 9).
  * Ativado quando environment.usarMock = false.
  */
 @Injectable()
-export class ProdutosApiService extends ProdutosService {
+export class PlanosApiService extends PlanosService {
   private readonly http = inject(HttpClient);
-  private readonly url = `${environment.apiUrl}/produtos`;
+  private readonly url = `${environment.apiUrl}/planos`;
 
-  listar(categoria?: Categoria): Observable<Produto[]> {
-    const params = categoria ? new HttpParams().set('categoria', categoria) : undefined;
-    return this.http.get<RespostaApi<Produto[]>>(this.url, { params }).pipe(
+  listar(duracaoMeses?: DuracaoMeses): Observable<Plano[]> {
+    const params = duracaoMeses ? new HttpParams().set('duracaoMeses', duracaoMeses) : undefined;
+    return this.http.get<RespostaApi<Plano[]>>(this.url, { params }).pipe(
       map((r) => r.dados),
       catchError(this.tratarErro),
     );
   }
 
-  buscarPorId(id: string): Observable<Produto> {
-    return this.http.get<RespostaApi<Produto>>(`${this.url}/${id}`).pipe(
+  buscarPorId(id: string): Observable<Plano> {
+    return this.http.get<RespostaApi<Plano>>(`${this.url}/${id}`).pipe(
       map((r) => r.dados),
       catchError(this.tratarErro),
     );
   }
 
-  criar(dados: ProdutoEntrada): Observable<Produto> {
-    return this.http.post<RespostaApi<Produto>>(this.url, dados).pipe(
+  criar(dados: PlanoEntrada): Observable<Plano> {
+    return this.http.post<RespostaApi<Plano>>(this.url, dados).pipe(
       map((r) => r.dados),
       catchError(this.tratarErro),
     );
   }
 
-  atualizar(id: string, dados: Partial<ProdutoEntrada>): Observable<Produto> {
-    return this.http.patch<RespostaApi<Produto>>(`${this.url}/${id}`, dados).pipe(
+  atualizar(id: string, dados: Partial<PlanoEntrada>): Observable<Plano> {
+    return this.http.patch<RespostaApi<Plano>>(`${this.url}/${id}`, dados).pipe(
       map((r) => r.dados),
       catchError(this.tratarErro),
     );
