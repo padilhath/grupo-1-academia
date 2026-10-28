@@ -19,6 +19,10 @@ export const routes: Routes = [
         loadChildren: () => import('./features/alunos/alunos.routes').then((m) => m.ALUNOS_ROUTES),
       },
       {
+        path: 'matriculas',
+        loadChildren: () => import('./features/matriculas/matriculas.routes').then((m) => m.ALUNOS_ROUTES),
+      },
+      {
         path: 'planos',
         loadChildren: () => import('./features/planos/planos.routes').then((m) => m.PLANOS_ROUTES),
       },
