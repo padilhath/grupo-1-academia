@@ -15,8 +15,8 @@ export const routes: Routes = [
     children: [
       { path: '', component: Inicio, title: 'Início' },
       {
-        path: 'produtos',
-        loadChildren: () => import('./features/produtos/produtos.routes').then((m) => m.PRODUTOS_ROUTES),
+        path: 'planos',
+        loadChildren: () => import('./features/planos/planos.routes').then((m) => m.PLANOS_ROUTES),
       },
       // TODO (aula 02): cada aluno adiciona aqui a rota do seu módulo, ex.:
       // { path: 'pets', loadChildren: () => import('./features/pets/pets.routes').then((m) => m.PETS_ROUTES) },
