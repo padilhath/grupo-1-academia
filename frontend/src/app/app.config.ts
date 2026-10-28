@@ -5,9 +5,9 @@ import { ApplicationConfig, LOCALE_ID, provideBrowserGlobalErrorListeners } from
 import { provideRouter, withComponentInputBinding } from '@angular/router';
 import { environment } from '../environments/environment';
 import { routes } from './app.routes';
-import { ProdutosApiService } from './features/produtos/services/produtos-api.service';
-import { ProdutosMockService } from './features/produtos/services/produtos-mock.service';
-import { ProdutosService } from './features/produtos/services/produtos.service';
+import { PlanosApiService } from './features/planos/services/planos-api.service';
+import { PlanosMockService } from './features/planos/services/planos-mock.service';
+import { PlanosService } from './features/planos/services/planos.service';
 
 // Formatos brasileiros para moeda, datas e números (R$ 8,90)
 registerLocaleData(localePt);
@@ -22,8 +22,8 @@ export const appConfig: ApplicationConfig = {
     // Escolhe a implementação do serviço conforme o environment.
     // Cada aluno registra aqui o serviço do seu módulo, do mesmo jeito.
     {
-      provide: ProdutosService,
-      useClass: environment.usarMock ? ProdutosMockService : ProdutosApiService,
+      provide: PlanosService,
+      useClass: environment.usarMock ? PlanosMockService : PlanosApiService,
     },
   ],
 };

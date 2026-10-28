@@ -17,11 +17,11 @@ export const routes: Routes = [
       {
         path: 'alunos',
         loadChildren: () => import('./features/alunos/alunos.routes').then((m) => m.ALUNOS_ROUTES),
-
-        
       },
-      // TODO (aula 02): cada aluno adiciona aqui a rota do seu módulo, ex.:
-      // { path: 'pets', loadChildren: () => import('./features/pets/pets.routes').then((m) => m.PETS_ROUTES) },
+      {
+        path: 'planos',
+        loadChildren: () => import('./features/planos/planos.routes').then((m) => m.PLANOS_ROUTES),
+      },
     ],
   },
   { path: '**', component: NaoEncontrado, title: 'Página não encontrada' },
