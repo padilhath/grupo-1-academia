@@ -1,26 +1,27 @@
 import { CurrencyPipe } from '@angular/common';
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { ProdutoCard } from '../produto-card/produto-card';
-import { CATEGORIAS, Categoria, Produto } from '../produto.model';
-import { ProdutosService } from '../services/produtos.service';
+import { PlanoCard } from '../plano-card/plano-card';
+import { OPCOES_DURACAO_MESES, DuracaoMeses, Plano } from '../plano.model';
+import { PlanosService } from '../services/planos.service';
+import { FormsModule } from '@angular/forms';
 
 /** Tela de listagem (componente de página — PDF 02, cap. 4). */
 @Component({
-  selector: 'app-produtos-lista',
-  imports: [RouterLink, CurrencyPipe, ProdutoCard],
-  templateUrl: './produtos-lista.html',
+  selector: 'app-planos-lista',
+  imports: [RouterLink, CurrencyPipe, PlanoCard, FormsModule],
+  templateUrl: './plano-lista.html',
 })
-export class ProdutosLista implements OnInit {
-  private readonly produtosService = inject(ProdutosService);
+export class PlanosLista implements OnInit {
+  private readonly planosService = inject(PlanosService);
 
-  protected readonly categorias = CATEGORIAS;
+  protected readonly duracaoMeses = OPCOES_DURACAO_MESES;
   // Estado da tela com signals (PDF 02, cap. 11)
-  protected readonly produtos = signal<Produto[]>([]);
+  protected readonly planos = signal<Plano[]>([]);
   protected readonly carregando = signal(false);
   protected readonly erro = signal<string | null>(null);
   protected readonly sucesso = signal<string | null>(null);
-  protected readonly filtro = signal<Categoria | ''>('');
+  protected readonly filtro = signal<DuracaoMeses | null>(null);
   // Estado LOCAL da tela: como mostrar a lista (aula 02 — @if e componente filho)
   protected readonly modo = signal<'tabela' | 'cartoes'>('tabela');
 
@@ -28,17 +29,17 @@ export class ProdutosLista implements OnInit {
     this.carregar();
   }
 
-  protected filtrar(valor: string): void {
-    this.filtro.set(valor as Categoria | '');
+  protected filtrar(valor: DuracaoMeses | null): void {
+    this.filtro.set(valor);
     this.carregar();
   }
 
   protected carregar(): void {
     this.carregando.set(true);
     this.erro.set(null);
-    this.produtosService.listar(this.filtro() || undefined).subscribe({
+    this.planosService.listar(this.filtro() ?? undefined).subscribe({
       next: (lista) => {
-        this.produtos.set(lista);
+        this.planos.set(lista);
         this.carregando.set(false);
       },
       error: (e: Error) => {
@@ -48,15 +49,15 @@ export class ProdutosLista implements OnInit {
     });
   }
 
-  protected excluir(produto: Produto): void {
-    if (!confirm(`Excluir o produto "${produto.nome}"?`)) {
+  protected excluir(plano: Plano): void {
+    if (!confirm(`Excluir o plano "${plano.nome}"?`)) {
       return;
     }
     this.erro.set(null);
     this.sucesso.set(null);
-    this.produtosService.remover(produto._id).subscribe({
+    this.planosService.remover(plano._id).subscribe({
       next: () => {
-        this.sucesso.set(`Produto "${produto.nome}" excluído.`);
+        this.sucesso.set(`Plano "${plano.nome}" excluído.`);
         this.carregar();
       },
       error: (e: Error) => this.erro.set(e.message),
