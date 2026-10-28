@@ -6,12 +6,11 @@ import {
     Status,
     TRANSICOES,
 } from '../matricula.model';
-import { MatriculasService } from './matriculas.service';
 
 @Injectable({
     providedIn: 'root',
 })
-export class MatriculasMockService implements MatriculasService {
+export class MatriculasMockService {
     private proximoId = 4;
 
     // TODO: integrar as referências reais após o merge.

@@ -20,7 +20,7 @@ export const routes: Routes = [
       },
       {
         path: 'matriculas',
-        loadChildren: () => import('./features/matriculas/matriculas.routes').then((m) => m.ALUNOS_ROUTES),
+        loadChildren: () => import('./features/matriculas/matriculas.routes').then((m) => m.MATRICULAS_ROUTES),
       },
       {
         path: 'planos',
