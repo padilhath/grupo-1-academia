@@ -20,11 +20,17 @@ export const routes: Routes = [
       },
       {
         path: 'matriculas',
-        loadChildren: () => import('./features/matriculas/matriculas.routes').then((m) => m.MATRICULAS_ROUTES),
+        loadChildren: () =>
+          import('./features/matriculas/matriculas.routes').then((m) => m.MATRICULAS_ROUTES),
       },
       {
         path: 'planos',
         loadChildren: () => import('./features/planos/planos.routes').then((m) => m.PLANOS_ROUTES),
+      },
+      {
+        path: 'instrutores',
+        loadChildren: () =>
+          import('./features/instrutores/instrutores.routes').then((m) => m.INSTRUTORES_ROUTES),
       },
     ],
   },

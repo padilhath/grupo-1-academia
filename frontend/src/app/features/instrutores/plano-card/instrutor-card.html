@@ -1,0 +1,10 @@
+<article class="cartao-produto">
+  <span class="etiqueta">{{ instrutor().nome }}</span>
+  <h2>{{ instrutor().email }}</h2>
+  <p>{{ instrutor().cref }}</p>
+
+  <div class="acoes">
+    <a class="botao secundario" [routerLink]="['/planos', instrutor()._id, 'editar']">Editar</a>
+    <button type="button" class="botao perigo" (click)="pedirExclusao()">Excluir</button>
+  </div>
+</article>
