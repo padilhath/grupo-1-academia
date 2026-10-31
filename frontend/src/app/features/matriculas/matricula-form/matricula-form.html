@@ -1,0 +1,90 @@
+<h1>{{ id ? 'Editar matrícula' : 'Nova matrícula' }}</h1>
+
+@if (erro()) {
+<p class="alerta erro" role="alert">{{ erro() }}</p>
+}
+<form class="formulario cartao" [formGroup]="form" (ngSubmit)="salvar()">
+    <div class="campo">
+        <label for="aluno">Aluno *</label>
+
+        <select id="aluno" formControlName="aluno" [attr.aria-invalid]="invalido('aluno')"
+            aria-describedby="erro-aluno">
+            <option value="" disabled>Selecione...</option>
+
+            @for (aluno of alunos; track aluno._id) {
+            <option [value]="aluno._id">{{ aluno.nome }}</option>
+            }
+        </select>
+
+        @if (invalido('aluno')) {
+        <small id="erro-aluno" class="msg-erro">
+            Escolha um aluno.
+        </small>
+        }
+    </div>
+
+    <div class="campo">
+        <label for="plano">Plano *</label>
+
+        <select id="plano" formControlName="plano" [attr.aria-invalid]="invalido('plano')"
+            aria-describedby="erro-plano">
+            <option value="" disabled>Selecione...</option>
+
+            @for (plano of planos; track plano._id) {
+            <option [value]="plano._id">{{ plano.nome }}</option>
+            }
+        </select>
+
+        @if (invalido('plano')) {
+        <small id="erro-plano" class="msg-erro">
+            Escolha um plano.
+        </small>
+        }
+    </div>
+
+    <div class="campo">
+        <label for="instrutor">Instrutor responsável *</label>
+
+        <select id="instrutor" formControlName="instrutor" [attr.aria-invalid]="invalido('instrutor')"
+            aria-describedby="erro-instrutor">
+            <option value="" disabled>Selecione...</option>
+
+            @for (instrutor of instrutores; track instrutor._id) {
+            <option [value]="instrutor._id">{{ instrutor.nome }}</option>
+            }
+        </select>
+
+        @if (invalido('instrutor')) {
+        <small id="erro-instrutor" class="msg-erro">
+            Escolha um instrutor.
+        </small>
+        }
+    </div>
+
+    <div class="campo">
+        <label for="dataInicio">Data de início *</label>
+
+        <input id="dataInicio" type="date" formControlName="dataInicio" [attr.aria-invalid]="invalido('dataInicio')"
+            aria-describedby="erro-data" />
+
+        @if (invalido('dataInicio')) {
+        <small id="erro-data" class="msg-erro">
+            Informe a data de início.
+        </small>
+        }
+    </div>
+
+    @if (!id) {
+    <p>A matrícula será cadastrada com status ativa.</p>
+    }
+
+    <div class="acoes-form">
+        <a class="botao secundario" routerLink="/matriculas">
+            Cancelar
+        </a>
+        <button class="botao" type="submit" [disabled]="form.disabled">
+            Salvar
+        </button>
+    </div>
+
+</form>

@@ -1,0 +1,94 @@
+<div class="cabecalho-pagina">
+    <h1>Matrículas</h1>
+    <a class="botao" routerLink="/matriculas/novo">
+        Nova matrícula
+    </a>
+</div>
+
+@if (sucesso()) {
+<p class="alerta sucesso" role="status">{{ sucesso() }}</p>
+}
+
+@if (erro()) {
+<p class="alerta erro" role="alert">{{ erro() }}</p>
+}
+
+<div class="barra-filtros">
+    <label for="status">Filtrar por status</label>
+
+    <select id="status" [value]="status()" (change)="filtrar($event)">
+        <option value="">Todos os status</option>
+
+        @for (opcao of opcoesStatus; track opcao) {
+        <option [value]="opcao">{{ opcao }}</option>
+        }
+    </select>
+</div>
+
+@if (carregando()) {
+<p class="carregando" role="status">
+    Carregando matrículas...
+</p>
+} @else if (erro() && matriculas().length === 0) {
+<button class="botao" type="button" (click)="carregar()">
+    Tentar novamente
+</button>
+} @else if (matriculasFiltradas().length === 0) {
+<p class="vazio" role="status">
+    Nenhuma matrícula encontrada.
+</p>
+} @else {
+<div class="tabela-container">
+    <table class="tabela">
+        <caption>Lista de matrículas</caption>
+
+        <thead>
+            <tr>
+                <th scope="col">Aluno</th>
+                <th scope="col">Plano</th>
+                <th scope="col">Instrutor responsável</th>
+                <th scope="col">Data de início</th>
+                <th scope="col">Status</th>
+                <th scope="col">Ações</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @for (matricula of matriculasFiltradas(); track matricula._id) {
+            <tr>
+                <td>{{ textoDe(matricula.aluno) }}</td>
+                <td>{{ textoDe(matricula.plano) }}</td>
+                <td>{{ textoDe(matricula.instrutor) }}</td>
+
+                <td>
+                    {{ matricula.dataInicio | date: 'dd/MM/yyyy' : 'UTC' }}
+                </td>
+
+                <td>
+                    <span class="etiqueta" [class.ativa]="matricula.status === 'ativa'"
+                        [class.trancada]="matricula.status === 'trancada'"
+                        [class.cancelada]="matricula.status === 'cancelada'">
+                        {{ matricula.status }}
+                    </span>
+                </td>
+
+                <td>
+                    <div class="acoes">
+                        <a class="botao secundario" [routerLink]="['/matriculas', matricula._id, 'editar']">
+                            Editar
+                        </a>
+
+                        @for (novo of transicoes[matricula.status]; track novo) {
+                        <button class="botao" [class.perigo]="novo === 'cancelada'" type="button"
+                            (click)="mudarStatus(matricula, novo)">
+                            {{ nomesAcoes[novo] }}
+                        </button>
+                        }
+                    </div>
+                </td>
+            </tr>
+            }
+        </tbody>
+    </table>
+</div>
+}
