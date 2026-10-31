@@ -1,8 +1,8 @@
 import { Component, inject, input, OnInit, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import { DuracaoMeses, OPCOES_DURACAO_MESES, PlanoEntrada } from '../plano.model';
-import { PlanosService } from '../services/planos.service';
+import { CATEGORIAS, Categoria, ProdutoEntrada } from '../produto.model';
+import { ProdutosService } from '../services/produtos.service';
 
 /**
  * Formulário reativo de cadastro e edição (PDF 02, cap. 7).
@@ -10,38 +10,35 @@ import { PlanosService } from '../services/planos.service';
  * feedback rápido ao usuário — mas quem garante é a API.
  */
 @Component({
-  selector: 'app-plano-form',
+  selector: 'app-produto-form',
   imports: [ReactiveFormsModule, RouterLink],
-  templateUrl: './plano-form.html',
+  templateUrl: './produto-form.html',
 })
-export class PlanoForm implements OnInit {
+export class ProdutoForm implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly router = inject(Router);
-  private readonly planosService = inject(PlanosService);
+  private readonly produtosService = inject(ProdutosService);
 
   /** Vem da rota :id/editar (withComponentInputBinding). Vazio = cadastro. */
   readonly id = input<string>();
 
-  protected readonly duracaoMeses = OPCOES_DURACAO_MESES;
+  protected readonly categorias = CATEGORIAS;
   protected readonly salvando = signal(false);
   protected readonly erro = signal<string | null>(null);
 
   protected readonly form = this.fb.nonNullable.group({
-    nome: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(60)]],
-    modalidade: ['', [Validators.required]],
-    valorMensal: [1, [Validators.required, Validators.min(1)]],
-    duracaoMeses: [null as DuracaoMeses | null, [Validators.required]],
+    nome: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(80)]],
+    descricao: ['', [Validators.maxLength(300)]],
+    preco: [0, [Validators.required, Validators.min(0)]],
+    estoque: [0, [Validators.required, Validators.min(0), Validators.pattern(/^\d+$/)]],
+    categoria: ['' as Categoria | '', [Validators.required]],
   });
 
   ngOnInit(): void {
     const id = this.id();
     if (id) {
-      this.planosService.buscarPorId(id).subscribe({
-        next: (p) =>
-          this.form.patchValue({
-            ...p,
-            modalidade: typeof p.modalidade === 'string' ? p.modalidade : p.modalidade._id,
-          }),
+      this.produtosService.buscarPorId(id).subscribe({
+        next: (p) => this.form.patchValue(p),
         error: (e: Error) => this.erro.set(e.message),
       });
     }
@@ -61,12 +58,12 @@ export class PlanoForm implements OnInit {
     this.salvando.set(true);
     this.erro.set(null);
 
-    const dados = this.form.getRawValue() as PlanoEntrada;
+    const dados = this.form.getRawValue() as ProdutoEntrada;
     const id = this.id();
-    const operacao = id ? this.planosService.atualizar(id, dados) : this.planosService.criar(dados);
+    const operacao = id ? this.produtosService.atualizar(id, dados) : this.produtosService.criar(dados);
 
     operacao.subscribe({
-      next: () => this.router.navigate(['/planos']),
+      next: () => this.router.navigate(['/produtos']),
       error: (e: Error) => {
         this.erro.set(e.message);
         this.salvando.set(false);
