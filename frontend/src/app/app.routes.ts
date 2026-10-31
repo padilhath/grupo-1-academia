@@ -15,23 +15,11 @@ export const routes: Routes = [
     children: [
       { path: '', component: Inicio, title: 'Início' },
       {
-        path: 'alunos',
-        loadChildren: () => import('./features/alunos/alunos.routes').then((m) => m.ALUNOS_ROUTES),
+        path: 'produtos',
+        loadChildren: () => import('./features/produtos/produtos.routes').then((m) => m.PRODUTOS_ROUTES),
       },
-      {
-        path: 'matriculas',
-        loadChildren: () =>
-          import('./features/matriculas/matriculas.routes').then((m) => m.MATRICULAS_ROUTES),
-      },
-      {
-        path: 'planos',
-        loadChildren: () => import('./features/planos/planos.routes').then((m) => m.PLANOS_ROUTES),
-      },
-      {
-        path: 'instrutores',
-        loadChildren: () =>
-          import('./features/instrutores/instrutores.routes').then((m) => m.INSTRUTORES_ROUTES),
-      },
+      // TODO (aula 02): cada aluno adiciona aqui a rota do seu módulo, ex.:
+      // { path: 'pets', loadChildren: () => import('./features/pets/pets.routes').then((m) => m.PETS_ROUTES) },
     ],
   },
   { path: '**', component: NaoEncontrado, title: 'Página não encontrada' },

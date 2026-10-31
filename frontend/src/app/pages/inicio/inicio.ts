@@ -6,10 +6,8 @@ import { RouterLink } from '@angular/router';
   imports: [RouterLink],
   template: `
     <h1>Bem-vindo</h1>
-    <p>
-      Este é o projeto base do Projeto Integrador. Use o módulo
-      <a routerLink="/planos">Planos</a> como modelo para construir o módulo do seu domínio.
-    </p>
+    <p>Este é o projeto base do Projeto Integrador. Use o módulo
+      <a routerLink="/produtos">Produtos</a> como modelo para construir o módulo do seu domínio.</p>
     <!-- TODO (aula 11): o aluno do módulo de Relatórios coloca aqui os indicadores do sistema -->
   `,
 })

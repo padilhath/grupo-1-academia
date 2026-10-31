@@ -5,12 +5,9 @@ import { ApplicationConfig, LOCALE_ID, provideBrowserGlobalErrorListeners } from
 import { provideRouter, withComponentInputBinding } from '@angular/router';
 import { environment } from '../environments/environment';
 import { routes } from './app.routes';
-import { PlanosApiService } from './features/planos/services/planos-api.service';
-import { PlanosMockService } from './features/planos/services/planos-mock.service';
-import { PlanosService } from './features/planos/services/planos.service';
-import { InstrutoresApiService } from './features/instrutores/services/instrutores-api.service';
-import { InstrutoresMockService } from './features/instrutores/services/instrutores-mock.service';
-import { InstrutoresService } from './features/instrutores/services/instrutores.service';
+import { ProdutosApiService } from './features/produtos/services/produtos-api.service';
+import { ProdutosMockService } from './features/produtos/services/produtos-mock.service';
+import { ProdutosService } from './features/produtos/services/produtos.service';
 
 // Formatos brasileiros para moeda, datas e números (R$ 8,90)
 registerLocaleData(localePt);
@@ -25,12 +22,8 @@ export const appConfig: ApplicationConfig = {
     // Escolhe a implementação do serviço conforme o environment.
     // Cada aluno registra aqui o serviço do seu módulo, do mesmo jeito.
     {
-      provide: PlanosService,
-      useClass: environment.usarMock ? PlanosMockService : PlanosApiService,
-    },
-    {
-      provide: InstrutoresService,
-      useClass: environment.usarMock ? InstrutoresMockService : InstrutoresApiService,
+      provide: ProdutosService,
+      useClass: environment.usarMock ? ProdutosMockService : ProdutosApiService,
     },
   ],
 };
