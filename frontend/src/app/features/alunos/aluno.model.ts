@@ -26,4 +26,3 @@ export interface AlunoEntrada {
   objetivo: Objetivo;
   ativo?: boolean;
 }
-

@@ -8,7 +8,6 @@ import { AlunosMockService } from '../services/aluno-mock.service';
   selector: 'app-alunos-lista',
   imports: [DatePipe, RouterLink],
   templateUrl: './alunos-lista.html',
-  styleUrl: './alunos-lista.css',
 })
 export class AlunosLista {
   protected readonly opcoesObjetivo = OPCOES_OBJETIVO;
@@ -22,14 +21,12 @@ export class AlunosLista {
     const objetivo = this.objetivo();
 
     return this.alunos().filter(
-      (aluno) =>
-        aluno.ativo && (!objetivo || aluno.objetivo === objetivo),
+      (aluno) => aluno.ativo && (!objetivo || aluno.objetivo === objetivo),
     );
   });
 
   constructor() {
-    const resultado = inject(ActivatedRoute)
-      .snapshot.queryParamMap.get('resultado');
+    const resultado = inject(ActivatedRoute).snapshot.queryParamMap.get('resultado');
 
     if (resultado === 'cadastrado') {
       this.sucesso.set('Aluno cadastrado com sucesso.');
@@ -48,11 +45,7 @@ export class AlunosLista {
       const alunos = await this.alunosService.listarComEspera();
       this.alunos.set(alunos);
     } catch (erro) {
-      this.erro.set(
-        erro instanceof Error
-          ? erro.message
-          : 'Não foi possível carregar os alunos.',
-      );
+      this.erro.set(erro instanceof Error ? erro.message : 'Não foi possível carregar os alunos.');
     } finally {
       this.carregando.set(false);
     }
@@ -67,9 +60,7 @@ export class AlunosLista {
   protected readonly erro = signal('');
 
   protected inativar(aluno: Aluno): void {
-    const confirmado = window.confirm(
-      `Deseja inativar o aluno ${aluno.nome}?`,
-    );
+    const confirmado = window.confirm(`Deseja inativar o aluno ${aluno.nome}?`);
 
     if (!confirmado) {
       return;
@@ -83,11 +74,7 @@ export class AlunosLista {
       this.alunos.set(this.alunosService.listar());
       this.sucesso.set('Aluno inativado com sucesso.');
     } catch (erro) {
-      this.erro.set(
-        erro instanceof Error
-          ? erro.message
-          : 'Não foi possível inativar o aluno.',
-      );
+      this.erro.set(erro instanceof Error ? erro.message : 'Não foi possível inativar o aluno.');
     }
   }
 }

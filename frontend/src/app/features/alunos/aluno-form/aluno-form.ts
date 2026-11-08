@@ -1,22 +1,13 @@
 import { Component, inject, signal } from '@angular/core';
-import {
-  FormBuilder,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import {
-  AlunoEntrada,
-  Objetivo,
-  OPCOES_OBJETIVO,
-} from '../aluno.model';
+import { AlunoEntrada, Objetivo, OPCOES_OBJETIVO } from '../aluno.model';
 import { AlunosMockService } from '../services/aluno-mock.service';
 
 @Component({
   selector: 'app-aluno-form',
   imports: [ReactiveFormsModule, RouterLink],
   templateUrl: './aluno-form.html',
-  styleUrl: './aluno-form.css',
 })
 export class AlunoForm {
   private readonly fb = inject(FormBuilder);
@@ -29,22 +20,9 @@ export class AlunoForm {
   protected readonly erro = signal('');
 
   protected readonly form = this.fb.nonNullable.group({
-    nome: [
-      '',
-      [
-        Validators.required,
-        Validators.minLength(3),
-        Validators.maxLength(80),
-      ],
-    ],
+    nome: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(80)]],
     email: ['', [Validators.required, Validators.email]],
-    telefone: [
-      '',
-      [
-        Validators.required,
-        Validators.pattern(/^\(\d{2}\) \d{4,5}-\d{4}$/),
-      ],
-    ],
+    telefone: ['', [Validators.required, Validators.pattern(/^\(\d{2}\) \d{4,5}-\d{4}$/)]],
     dataNascimento: ['', Validators.required],
     objetivo: ['' as Objetivo | '', Validators.required],
   });
@@ -62,20 +40,14 @@ export class AlunoForm {
           objetivo: aluno.objetivo,
         });
       } catch (erro) {
-        this.erro.set(
-          erro instanceof Error
-            ? erro.message
-            : 'Não foi possível carregar o aluno.',
-        );
+        this.erro.set(erro instanceof Error ? erro.message : 'Não foi possível carregar o aluno.');
 
         this.form.disable();
       }
     }
   }
 
-  protected invalido(
-    campo: keyof typeof this.form.controls,
-  ): boolean {
+  protected invalido(campo: keyof typeof this.form.controls): boolean {
     const controle = this.form.controls[campo];
     return controle.invalid && controle.touched;
   }
@@ -110,11 +82,7 @@ export class AlunoForm {
         this.alunosService.criar(entrada);
       }
     } catch (erro) {
-      this.erro.set(
-        erro instanceof Error
-          ? erro.message
-          : 'Não foi possível salvar o aluno.',
-      );
+      this.erro.set(erro instanceof Error ? erro.message : 'Não foi possível salvar o aluno.');
       return;
     }
 

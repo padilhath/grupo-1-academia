@@ -5,6 +5,7 @@ import { PlanoCard } from '../plano-card/plano-card';
 import { OPCOES_DURACAO_MESES, DuracaoMeses, Plano } from '../plano.model';
 import { PlanosService } from '../services/planos.service';
 import { FormsModule } from '@angular/forms';
+import { textoDe } from '../../../core/models/referencia';
 
 /** Tela de listagem (componente de página — PDF 02, cap. 4). */
 @Component({
@@ -13,6 +14,8 @@ import { FormsModule } from '@angular/forms';
   templateUrl: './plano-lista.html',
 })
 export class PlanosLista implements OnInit {
+  protected readonly textoDe = textoDe;
+
   private readonly planosService = inject(PlanosService);
 
   protected readonly duracaoMeses = OPCOES_DURACAO_MESES;

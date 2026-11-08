@@ -3,6 +3,7 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { DuracaoMeses, OPCOES_DURACAO_MESES, PlanoEntrada } from '../plano.model';
 import { PlanosService } from '../services/planos.service';
+import { Referencia } from '../../../core/models/referencia';
 
 /**
  * Formulário reativo de cadastro e edição (PDF 02, cap. 7).
@@ -15,6 +16,11 @@ import { PlanosService } from '../services/planos.service';
   templateUrl: './plano-form.html',
 })
 export class PlanoForm implements OnInit {
+  protected readonly modalidades = signal([
+    { _id: '1', nome: 'Modalidade 1' },
+    { _id: '2', nome: 'Modalidade 2' },
+  ]);
+
   private readonly fb = inject(FormBuilder);
   private readonly router = inject(Router);
   private readonly planosService = inject(PlanosService);
@@ -28,7 +34,7 @@ export class PlanoForm implements OnInit {
 
   protected readonly form = this.fb.nonNullable.group({
     nome: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(60)]],
-    modalidade: ['', [Validators.required]],
+    modalidade: ['' as Referencia, [Validators.required]],
     valorMensal: [1, [Validators.required, Validators.min(1)]],
     duracaoMeses: [null as DuracaoMeses | null, [Validators.required]],
   });
@@ -37,11 +43,7 @@ export class PlanoForm implements OnInit {
     const id = this.id();
     if (id) {
       this.planosService.buscarPorId(id).subscribe({
-        next: (p) =>
-          this.form.patchValue({
-            ...p,
-            modalidade: typeof p.modalidade === 'string' ? p.modalidade : p.modalidade._id,
-          }),
+        next: (p) => this.form.patchValue(p),
         error: (e: Error) => this.erro.set(e.message),
       });
     }

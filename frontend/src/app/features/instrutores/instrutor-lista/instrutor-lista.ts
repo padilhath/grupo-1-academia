@@ -3,7 +3,7 @@ import { Component, inject, OnInit, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { OPCOES_TURNO, Turno, Instrutor } from '../instrutor.model';
 import { FormsModule } from '@angular/forms';
-import { InstrutorCard } from '../plano-card/instrutor-card';
+import { InstrutorCard } from '../instrutor-card/instrutor-card';
 import { InstrutoresService } from '../services/instrutores.service';
 
 /** Tela de listagem (componente de página — PDF 02, cap. 4). */

@@ -2,12 +2,7 @@ import { DatePipe } from '@angular/common';
 import { Component, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { textoDe } from '../../../core/models/referencia';
-import {
-  Matricula,
-  STATUS,
-  Status,
-  TRANSICOES,
-} from '../matricula.model';
+import { Matricula, STATUS, Status, TRANSICOES } from '../matricula.model';
 import { MatriculasMockService } from '../services/matriculas-mock.service';
 
 @Component({
@@ -37,13 +32,10 @@ export class MatriculasLista {
   protected readonly matriculasFiltradas = computed(() => {
     const status = this.status();
 
-    return this.matriculas().filter(
-      (matricula) => !status || matricula.status === status,
-    );
+    return this.matriculas().filter((matricula) => !status || matricula.status === status);
   });
   constructor() {
-    const resultado = inject(ActivatedRoute)
-      .snapshot.queryParamMap.get('resultado');
+    const resultado = inject(ActivatedRoute).snapshot.queryParamMap.get('resultado');
 
     if (resultado === 'cadastrada') {
       this.sucesso.set('Matrícula cadastrada com sucesso.');
@@ -54,31 +46,27 @@ export class MatriculasLista {
     void this.carregar();
   }
   protected async carregar(): Promise<void> {
-  this.carregando.set(true);
-  this.erro.set('');
+    this.carregando.set(true);
+    this.erro.set('');
 
-  try {
-    const matriculas = await this.matriculasService.listarComEspera();
-    this.matriculas.set(matriculas);
-  } catch (erro) {
-    this.erro.set(
-      erro instanceof Error
-        ? erro.message
-        : 'Não foi possível carregar as matrículas.',
-    );
-  } finally {
-    this.carregando.set(false);
+    try {
+      const matriculas = await this.matriculasService.listarComEspera();
+      this.matriculas.set(matriculas);
+    } catch (erro) {
+      this.erro.set(
+        erro instanceof Error ? erro.message : 'Não foi possível carregar as matrículas.',
+      );
+    } finally {
+      this.carregando.set(false);
+    }
   }
-}
   protected filtrar(event: Event): void {
     const select = event.target as HTMLSelectElement;
     this.status.set(select.value as Status | '');
   }
 
   protected mudarStatus(matricula: Matricula, novo: Status): void {
-    const confirmado = window.confirm(
-      `Deseja mudar o status da matrícula para "${novo}"?`,
-    );
+    const confirmado = window.confirm(`Deseja mudar o status da matrícula para "${novo}"?`);
 
     if (!confirmado) {
       return;
@@ -92,11 +80,7 @@ export class MatriculasLista {
       this.matriculas.set(this.matriculasService.listar());
       this.sucesso.set('Status atualizado com sucesso.');
     } catch (erro) {
-      this.erro.set(
-        erro instanceof Error
-          ? erro.message
-          : 'Não foi possível atualizar o status.',
-      );
+      this.erro.set(erro instanceof Error ? erro.message : 'Não foi possível atualizar o status.');
     }
   }
 }

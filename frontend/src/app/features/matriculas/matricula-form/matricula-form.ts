@@ -1,9 +1,5 @@
 import { Component, inject, signal } from '@angular/core';
-import {
-  FormBuilder,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { idDe } from '../../../core/models/referencia';
 import { MatriculasMockService } from '../services/matriculas-mock.service';
@@ -59,9 +55,7 @@ export class MatriculaForm {
         });
       } catch (erro) {
         this.erro.set(
-          erro instanceof Error
-            ? erro.message
-            : 'Não foi possível carregar a matrícula.',
+          erro instanceof Error ? erro.message : 'Não foi possível carregar a matrícula.',
         );
 
         this.form.disable();
@@ -69,9 +63,7 @@ export class MatriculaForm {
     }
   }
 
-  protected invalido(
-    campo: keyof typeof this.form.controls,
-  ): boolean {
+  protected invalido(campo: keyof typeof this.form.controls): boolean {
     const controle = this.form.controls[campo];
     return controle.invalid && controle.touched;
   }
@@ -97,11 +89,7 @@ export class MatriculaForm {
         this.service.criar(entrada);
       }
     } catch (erro) {
-      this.erro.set(
-        erro instanceof Error
-          ? erro.message
-          : 'Não foi possível salvar a matrícula.',
-      );
+      this.erro.set(erro instanceof Error ? erro.message : 'Não foi possível salvar a matrícula.');
       return;
     }
 

@@ -25,10 +25,7 @@
                 "input": "public"
               }
             ],
-            "styles": [
-              "src/styles.css",
-              "src/estilos-do-grupo.css"
-            ]
+            "styles": ["src/styles.css", "src/estilos-do-grupo.css"]
           },
           "configurations": {
             "production": {

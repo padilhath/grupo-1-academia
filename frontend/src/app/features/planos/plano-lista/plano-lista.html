@@ -69,8 +69,8 @@
             <td>
               <span class="etiqueta">{{ p.duracaoMeses }}</span>
             </td>
-            <td class="numero">{{ p.valorMensal | currency: 'BRL' }}</td>
-            <td class="numero">{{ p.modalidade }}</td>
+            <td>{{ p.valorMensal | currency: 'BRL' }}</td>
+            <td>{{ textoDe(p.modalidade) }}</td>
             <td>
               <div class="acoes">
                 <a class="botao secundario" [routerLink]="[p._id, 'editar']">Editar</a>

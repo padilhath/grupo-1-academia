@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
-import { InstrutorForm } from './plano-form/instrutor-form';
-import { InstrutoresLista } from './plano-lista/instrutor-lista';
+import { InstrutorForm } from './instrutor-form/instrutor-form';
+import { InstrutoresLista } from './instrutor-lista/instrutor-lista';
 
 export const INSTRUTORES_ROUTES: Routes = [
   { path: '', component: InstrutoresLista, title: 'Instrutores' },

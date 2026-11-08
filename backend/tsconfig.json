@@ -22,9 +22,5 @@
     "strictBindCallApply": true,
     "noFallthroughCasesInSwitch": true
   },
-  "exclude": [
-    "node_modules",
-    "dist",
-    "testes-obrigatorios"
-  ]
+  "exclude": ["node_modules", "dist", "testes-obrigatorios"]
 }

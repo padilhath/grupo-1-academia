@@ -18,23 +18,43 @@
   <div class="linha">
     <div class="campo">
       <label for="valorMensal">Preço (R$) *</label>
-      <input id="valorMensal" type="number" step="0.01" formControlName="valorMensal" [class.invalido]="invalido('valorMensal')" />
+      <input
+        id="valorMensal"
+        type="number"
+        step="0.01"
+        formControlName="valorMensal"
+        [class.invalido]="invalido('valorMensal')"
+      />
       @if (invalido('valorMensal')) {
         <small class="msg-erro">O preço não pode ser negativo.</small>
       }
     </div>
 
-     <div class="campo">
+    <!-- pet-form.html -->
+    <div class="campo">
       <label for="modalidade">Modalidade *</label>
-      <input id="modalidade" formControlName="modalidade" [class.invalido]="invalido('modalidade')" />
+      <select
+        id="modalidade"
+        formControlName="modalidade"
+        [class.invalido]="invalido('modalidade')"
+      >
+        <option value="" disabled>Selecione...</option>
+        @for (t of modalidades(); track t._id) {
+          <option [value]="t._id">{{ t.nome }}</option>
+        }
+      </select>
       @if (invalido('modalidade')) {
-        <small class="msg-erro">Informe uma modalidade válida.</small>
+        <small class="msg-erro">Escolha o modalidade.</small>
       }
     </div>
 
     <div class="campo">
       <label for="duracaoMeses">Duração (meses) *</label>
-      <select id="duracaoMeses" formControlName="duracaoMeses" [class.invalido]="invalido('duracaoMeses')">
+      <select
+        id="duracaoMeses"
+        formControlName="duracaoMeses"
+        [class.invalido]="invalido('duracaoMeses')"
+      >
         <option value="" disabled>Selecione...</option>
         @for (c of duracaoMeses; track c) {
           <option [ngValue]="c">{{ c }}</option>
