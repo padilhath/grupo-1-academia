@@ -7,25 +7,21 @@ import { PlanosService } from '../services/planos.service';
 import { FormsModule } from '@angular/forms';
 import { textoDe } from '../../../core/models/referencia';
 
-/** Tela de listagem (componente de página — PDF 02, cap. 4). */
 @Component({
   selector: 'app-planos-lista',
   imports: [RouterLink, CurrencyPipe, PlanoCard, FormsModule],
   templateUrl: './plano-lista.html',
 })
 export class PlanosLista implements OnInit {
-  protected readonly textoDe = textoDe;
-
   private readonly planosService = inject(PlanosService);
 
+  protected readonly textoDe = textoDe;
   protected readonly duracaoMeses = OPCOES_DURACAO_MESES;
-  // Estado da tela com signals (PDF 02, cap. 11)
   protected readonly planos = signal<Plano[]>([]);
-  protected readonly carregando = signal(false);
   protected readonly erro = signal<string | null>(null);
   protected readonly sucesso = signal<string | null>(null);
   protected readonly filtro = signal<DuracaoMeses | null>(null);
-  // Estado LOCAL da tela: como mostrar a lista (aula 02 — @if e componente filho)
+  protected readonly carregando = signal(false);
   protected readonly modo = signal<'tabela' | 'cartoes'>('tabela');
 
   ngOnInit(): void {
@@ -40,6 +36,7 @@ export class PlanosLista implements OnInit {
   protected carregar(): void {
     this.carregando.set(true);
     this.erro.set(null);
+
     this.planosService.listar(this.filtro() ?? undefined).subscribe({
       next: (lista) => {
         this.planos.set(lista);

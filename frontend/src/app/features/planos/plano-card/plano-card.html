@@ -1,7 +1,7 @@
 <article class="cartao-produto">
   <span class="etiqueta">{{ plano().duracaoMeses }}</span>
   <h2>{{ plano().nome }}</h2>
-  <p class="preco">{{ plano().valorMensal| currency: 'BRL' }}</p>
+  <p class="preco">{{ plano().valorMensal | currency: 'BRL' }}</p>
 
   <div class="acoes">
     <a class="botao secundario" [routerLink]="['/planos', plano()._id, 'editar']">Editar</a>

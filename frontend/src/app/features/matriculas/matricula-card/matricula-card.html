@@ -1,0 +1,10 @@
+<article class="cartao-produto">
+  <span class="etiqueta">{{ matricula().status }}</span>
+  <h2>{{ matricula().aluno }}</h2>
+  <p>{{ matricula().plano }}</p>
+
+  <div class="acoes">
+    <a class="botao secundario" [routerLink]="['/matriculas', matricula()._id, 'editar']">Editar</a>
+    <button type="button" class="botao perigo" (click)="pedirExclusao()">Excluir</button>
+  </div>
+</article>

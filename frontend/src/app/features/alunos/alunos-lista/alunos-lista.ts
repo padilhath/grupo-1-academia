@@ -42,7 +42,7 @@ export class AlunosLista {
     this.erro.set('');
 
     try {
-      const alunos = await this.alunosService.listarComEspera();
+      const alunos = this.alunosService.listar();
       this.alunos.set(alunos);
     } catch (erro) {
       this.erro.set(erro instanceof Error ? erro.message : 'Não foi possível carregar os alunos.');

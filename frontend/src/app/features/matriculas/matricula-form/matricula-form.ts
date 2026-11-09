@@ -1,24 +1,31 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, input, OnInit, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { idDe } from '../../../core/models/referencia';
-import { MatriculasMockService } from '../services/matriculas-mock.service';
+import { Router, RouterLink } from '@angular/router';
+import { MatriculaEntrada } from '../matricula.model';
+import { MatriculasService } from '../services/matriculas.service';
+import { Referencia } from '../../../core/models/referencia';
 
 @Component({
   selector: 'app-matricula-form',
   imports: [ReactiveFormsModule, RouterLink],
   templateUrl: './matricula-form.html',
 })
-export class MatriculaForm {
+export class MatriculaForm implements OnInit {
   private readonly fb = inject(FormBuilder);
-  private readonly service = inject(MatriculasMockService);
-  private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
+  private readonly service = inject(MatriculasService);
 
-  protected readonly id = this.route.snapshot.paramMap.get('id');
-  protected readonly erro = signal('');
+  readonly id = input<string>();
 
-  // TODO: carregar as opções dos serviços após o merge.
+  protected readonly form = this.fb.nonNullable.group({
+    aluno: ['' as Referencia, Validators.required],
+    plano: ['' as Referencia, Validators.required],
+    instrutor: ['' as Referencia, Validators.required],
+    dataInicio: ['', Validators.required],
+  });
+  protected readonly erro = signal<string | null>(null);
+  protected readonly salvando = signal(false);
+
   protected readonly alunos = [
     { _id: '1', nome: 'Aluno de exemplo 1' },
     { _id: '2', nome: 'Aluno de exemplo 2' },
@@ -28,38 +35,22 @@ export class MatriculaForm {
   protected readonly planos = [
     { _id: '1', nome: 'Plano de exemplo 1' },
     { _id: '2', nome: 'Plano de exemplo 2' },
+    { _id: '3', nome: 'Plano de exemplo 3' },
   ];
 
   protected readonly instrutores = [
     { _id: '1', nome: 'Instrutor de exemplo 1' },
     { _id: '2', nome: 'Instrutor de exemplo 2' },
+    { _id: '3', nome: 'Instrutor de exemplo 3' },
   ];
 
-  protected readonly form = this.fb.nonNullable.group({
-    aluno: ['', Validators.required],
-    plano: ['', Validators.required],
-    instrutor: ['', Validators.required],
-    dataInicio: ['', Validators.required],
-  });
-
-  constructor() {
-    if (this.id) {
-      try {
-        const matricula = this.service.buscarPorId(this.id);
-
-        this.form.patchValue({
-          aluno: idDe(matricula.aluno),
-          plano: idDe(matricula.plano),
-          instrutor: idDe(matricula.instrutor),
-          dataInicio: matricula.dataInicio.slice(0, 10),
-        });
-      } catch (erro) {
-        this.erro.set(
-          erro instanceof Error ? erro.message : 'Não foi possível carregar a matrícula.',
-        );
-
-        this.form.disable();
-      }
+  ngOnInit(): void {
+    const id = this.id();
+    if (id) {
+      this.service.buscarPorId(id).subscribe({
+        next: (p) => this.form.patchValue(p),
+        error: (e: Error) => this.erro.set(e.message),
+      });
     }
   }
 
@@ -69,33 +60,22 @@ export class MatriculaForm {
   }
 
   protected salvar(): void {
-    if (this.form.disabled) {
-      return;
-    }
-
-    this.erro.set('');
-
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       return;
     }
+    this.salvando.set(true);
+    this.erro.set(null);
 
-    const entrada = this.form.getRawValue();
+    const dados = this.form.getRawValue() as MatriculaEntrada;
+    const id = this.id();
+    const operacao = id ? this.service.atualizar(id, dados) : this.service.criar(dados);
 
-    try {
-      if (this.id) {
-        this.service.atualizar(this.id, entrada);
-      } else {
-        this.service.criar(entrada);
-      }
-    } catch (erro) {
-      this.erro.set(erro instanceof Error ? erro.message : 'Não foi possível salvar a matrícula.');
-      return;
-    }
-
-    void this.router.navigate(['/matriculas'], {
-      queryParams: {
-        resultado: this.id ? 'editada' : 'cadastrada',
+    operacao.subscribe({
+      next: () => this.router.navigate(['/planos']),
+      error: (e: Error) => {
+        this.erro.set(e.message);
+        this.salvando.set(false);
       },
     });
   }

@@ -1,6 +1,6 @@
 <div class="cabecalho-pagina">
   <h1>Planos</h1>
-  <a class="botao" routerLink="novo">+ Novo plano</a>
+  <a class="botao" routerLink="novo">Novo plano</a>
 </div>
 
 <div class="barra-filtros">
@@ -35,6 +35,7 @@
 @if (sucesso()) {
   <p class="alerta sucesso" role="status">{{ sucesso() }}</p>
 }
+
 @if (erro()) {
   <p class="alerta erro" role="alert">{{ erro() }}</p>
 }
@@ -62,6 +63,7 @@
           <th>Ações</th>
         </tr>
       </thead>
+
       <tbody>
         @for (p of planos(); track p._id) {
           <tr>

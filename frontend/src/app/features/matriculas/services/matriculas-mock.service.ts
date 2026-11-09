@@ -1,12 +1,15 @@
 import { Injectable } from '@angular/core';
 import { idDe } from '../../../core/models/referencia';
 import { Matricula, MatriculaEntrada, Status, TRANSICOES } from '../matricula.model';
+import { MatriculasService } from './matriculas.service';
+import { delay, Observable, of } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
 })
-export class MatriculasMockService {
+export class MatriculasMockService extends MatriculasService {
   private proximoId = 4;
+  private readonly atraso = 400;
 
   // TODO: integrar as referências reais após o merge.
   private matriculas: Matricula[] = [
@@ -35,58 +38,54 @@ export class MatriculasMockService {
       status: 'cancelada',
     },
   ];
-  async listarComEspera(): Promise<Matricula[]> {
-    await new Promise<void>((resolve) => {
-      setTimeout(resolve, 400);
-    });
 
-    return this.listar();
-  }
-  listar(status?: Status): Matricula[] {
-    return this.matriculas
-      .filter((matricula) => !status || matricula.status === status)
-      .map((matricula) => ({ ...matricula }));
+  listar(status?: Status): Observable<Matricula[]> {
+    return of(
+      this.matriculas
+        .filter((matricula) => !status || matricula.status === status)
+        .map((matricula) => ({ ...matricula })),
+    );
   }
 
-  buscarPorId(id: string): Matricula {
-    return { ...this.encontrar(id) };
+  buscarPorId(id: string): Observable<Matricula> {
+    return of({ ...this.encontrar(id) }).pipe(delay(this.atraso));
   }
 
-  criar(entrada: MatriculaEntrada): Matricula {
-    this.validarDataInicio(entrada.dataInicio);
-    this.garantirSemMatriculaAtiva(entrada.aluno);
+  criar(dados: MatriculaEntrada): Observable<Matricula> {
+    this.validarDataInicio(dados.dataInicio);
+    this.garantirSemMatriculaAtiva(dados.aluno);
     const matricula: Matricula = {
-      ...entrada,
+      ...dados,
       _id: String(this.proximoId++),
       status: 'ativa',
     };
 
     this.matriculas.push(matricula);
 
-    return { ...matricula };
+    return of({ ...matricula }).pipe(delay(this.atraso));
   }
 
-  atualizar(id: string, entrada: MatriculaEntrada): Matricula {
+  atualizar(id: string, dados: Partial<MatriculaEntrada>): Observable<Matricula> {
     const matricula = this.encontrar(id);
 
-    if (entrada.dataInicio !== matricula.dataInicio) {
-      this.validarDataInicio(entrada.dataInicio);
+    if (dados.dataInicio && dados.dataInicio !== matricula.dataInicio) {
+      this.validarDataInicio(dados.dataInicio);
     }
 
-    if (matricula.status === 'ativa') {
-      this.garantirSemMatriculaAtiva(entrada.aluno, id);
+    if (dados.aluno && matricula.status === 'ativa') {
+      this.garantirSemMatriculaAtiva(dados.aluno, id);
     }
 
     // O status é preservado: só muda pelo método mudarStatus.
-    matricula.aluno = entrada.aluno;
-    matricula.plano = entrada.plano;
-    matricula.instrutor = entrada.instrutor;
-    matricula.dataInicio = entrada.dataInicio;
+    matricula.aluno = dados.aluno ?? matricula.aluno;
+    matricula.plano = dados.plano ?? matricula.plano;
+    matricula.instrutor = dados.instrutor ?? matricula.instrutor;
+    matricula.dataInicio = dados.dataInicio ?? matricula.dataInicio;
 
-    return { ...matricula };
+    return of({ ...matricula }).pipe(delay(this.atraso));
   }
 
-  mudarStatus(id: string, novo: Status): Matricula {
+  mudarStatus(id: string, novo: Status): Observable<Matricula> {
     const matricula = this.encontrar(id);
 
     if (!TRANSICOES[matricula.status].includes(novo)) {
@@ -99,7 +98,12 @@ export class MatriculasMockService {
 
     matricula.status = novo;
 
-    return { ...matricula };
+    return of({ ...matricula }).pipe(delay(this.atraso));
+  }
+
+  remover(id: string): Observable<void> {
+    this.matriculas = this.matriculas.filter((m) => m._id !== id);
+    return of(undefined).pipe(delay(this.atraso));
   }
 
   private encontrar(id: string): Matricula {

@@ -37,14 +37,6 @@ export class AlunosMockService {
     },
   ];
 
-  async listarComEspera(): Promise<Aluno[]> {
-    await new Promise<void>((resolve) => {
-      setTimeout(resolve, 400);
-    });
-
-    return this.listar();
-  }
-
   listar(objetivo?: Objetivo): Aluno[] {
     return this.alunos
       .filter((aluno) => aluno.ativo && (!objetivo || aluno.objetivo === objetivo))

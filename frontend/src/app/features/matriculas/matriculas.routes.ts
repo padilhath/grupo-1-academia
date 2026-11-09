@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { MatriculasLista } from './matriculas-lista/matriculas-lista';
+import { MatriculasLista } from './matricula-lista/matriculas-lista';
 import { MatriculaForm } from './matricula-form/matricula-form';
 
 export const MATRICULAS_ROUTES: Routes = [

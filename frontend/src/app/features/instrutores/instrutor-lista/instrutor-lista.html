@@ -1,6 +1,6 @@
 <div class="cabecalho-pagina">
   <h1>Instrutores</h1>
-  <a class="botao" routerLink="novo">+ Novo instrutor</a>
+  <a class="botao" routerLink="novo">Novo instrutor</a>
 </div>
 
 <div class="barra-filtros">
@@ -35,6 +35,7 @@
 @if (sucesso()) {
   <p class="alerta sucesso" role="status">{{ sucesso() }}</p>
 }
+
 @if (erro()) {
   <p class="alerta erro" role="alert">{{ erro() }}</p>
 }

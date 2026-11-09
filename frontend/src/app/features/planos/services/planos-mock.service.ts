@@ -56,18 +56,6 @@ export class PlanosMockService extends PlanosService {
   }
 
   remover(id: string): Observable<void> {
-    const produto = this.planos.find((p) => p._id === id);
-    /*
-    if (produto && produto.estoque > 0) {
-      return throwError(
-        () =>
-          new Error(
-            'Não é possível excluir um produto com estoque. Zere o estoque ou inative o produto.',
-          ),
-      );
-    }
-    */
-
     this.planos = this.planos.filter((p) => p._id !== id);
     return of(undefined).pipe(delay(this.atraso));
   }

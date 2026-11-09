@@ -11,6 +11,9 @@ import { PlanosService } from './features/planos/services/planos.service';
 import { InstrutoresApiService } from './features/instrutores/services/instrutores-api.service';
 import { InstrutoresMockService } from './features/instrutores/services/instrutores-mock.service';
 import { InstrutoresService } from './features/instrutores/services/instrutores.service';
+import { MatriculasService } from './features/matriculas/services/matriculas.service';
+import { MatriculasMockService } from './features/matriculas/services/matriculas-mock.service';
+import { MatriculasApiService } from './features/matriculas/services/matriculas-api.service';
 
 // Formatos brasileiros para moeda, datas e números (R$ 8,90)
 registerLocaleData(localePt);
@@ -31,6 +34,10 @@ export const appConfig: ApplicationConfig = {
     {
       provide: InstrutoresService,
       useClass: environment.usarMock ? InstrutoresMockService : InstrutoresApiService,
+    },
+    {
+      provide: MatriculasService,
+      useClass: environment.usarMock ? MatriculasMockService : MatriculasApiService,
     },
   ],
 };
