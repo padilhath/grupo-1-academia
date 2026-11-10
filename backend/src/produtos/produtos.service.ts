@@ -2,6 +2,7 @@ import {
   BadRequestException,
   ConflictException,
   Injectable,
+  Logger,
   NotFoundException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
@@ -16,6 +17,8 @@ import { Categoria, Produto, ProdutoDocument } from './schemas/produto.schema';
  */
 @Injectable()
 export class ProdutosService {
+  private readonly logger = new Logger(ProdutosService.name);
+
   constructor(
     @InjectModel(Produto.name)
     private readonly produtoModel: Model<ProdutoDocument>,
@@ -38,6 +41,7 @@ export class ProdutosService {
   async criar(dto: CreateProdutoDto): Promise<Produto> {
     await this.garantirNomeUnico(dto.nome);
     const criado = await this.produtoModel.create(dto);
+    this.logger.log(`Produto criado: ${criado._id}`);
     return criado.toObject();
   }
 
@@ -67,6 +71,7 @@ export class ProdutosService {
       );
     }
     await this.produtoModel.findByIdAndDelete(id).exec();
+    this.logger.log(`Produto excluído: ${id}`);
   }
 
   // ---------- regras auxiliares ----------

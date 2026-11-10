@@ -5,6 +5,31 @@ Para receber: veja o **Passo 4** de [`COMECE-AQUI.md`](COMECE-AQUI.md).
 
 ---
 
+## v1.7 — Aulas 14 e 15 · Robustez, Logs, Documentação e Banca Final (C5)
+
+**Etiqueta:** `base-v1.7`
+
+- Novo esqueleto do filtro global de exceções em `backend/src/common/filters/excecoes.filter.ts`, padronizando o formato de erros `{ sucesso: false, status, message, caminho, dataHora }` e separando mensagens amigáveis de logs técnicos (aula 14, slides 4 a 6).
+- Novo teste obrigatório com 6 cenários em `backend/testes-obrigatorios/excecoes.filter.spec.ts` (atualizado em `backend/testes-obrigatorios/LEIA-ME.md`).
+- `backend/src/produtos/produtos.service.ts` atualizado com exemplo de logs de eventos de negócio (`this.logger.log`) para auditoria e rastreabilidade (aula 14, slide 7).
+- Roteiros das aulas em `guia/aulas/aula-14.md` (tratamento global de erros, logs, validação ponta a ponta e ADRs) e `guia/aulas/aula-15.md` (roteiro da banca de 17 min, postura, perguntas da banca e tag final `v1.0` na main — Checkpoint C5).
+
+**O que o grupo precisa fazer:** só o merge. Nenhum arquivo do grupo foi alterado.
+
+---
+
+## v1.6 — Aulas 11, 12 e 13 · Regras de Negócio, JWT, Perfis e Integração (C4)
+
+**Etiqueta:** `base-v1.6`
+
+- `backend/src/produtos/produtos.controller.ts` atualizado com o decorator `@ApiBearerAuth()` para autorização no Swagger (aula 12, slide 9).
+- `backend/.env.example` atualizado com a variável `JWT_SECRET` (mínimo de 32 caracteres para assinatura de tokens).
+- Roteiros das aulas em `guia/aulas/aula-11.md` (regras no service, validação contextual, estados e relatórios com aggregation), `guia/aulas/aula-12.md` (autenticação com JWT, bcrypt, guard global e testes obrigatórios) e `guia/aulas/aula-13.md` (autorização por perfis, login no front, `usarMock: false` e entrega do Checkpoint C4).
+
+**O que o grupo precisa fazer:** só o merge. Nenhum arquivo do grupo foi alterado.
+
+---
+
 ## v1.5 — Aulas 09 e 10 · MVC, CRUD, DTOs, Testes e Swagger
 
 **Etiqueta:** `base-v1.5`

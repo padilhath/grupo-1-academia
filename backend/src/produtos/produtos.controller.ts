@@ -10,7 +10,13 @@ import {
   Post,
   Query,
 } from '@nestjs/common';
-import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiQuery,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { CreateProdutoDto } from './dto/create-produto.dto';
 import { UpdateProdutoDto } from './dto/update-produto.dto';
 import { ProdutosService } from './produtos.service';
@@ -19,7 +25,9 @@ import { CATEGORIAS, type Categoria } from './schemas/produto.schema';
 /**
  * O Controller recebe a requisição, extrai os dados e delega ao Service.
  * Nada de regra de negócio aqui (aula 09, slides 3 e 5).
+ * @ApiBearerAuth permite enviar o JWT no Swagger (aula 12, slide 9).
  */
+@ApiBearerAuth()
 @ApiTags('Produtos')
 @Controller('produtos')
 export class ProdutosController {
