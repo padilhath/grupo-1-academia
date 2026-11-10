@@ -1,69 +1,87 @@
 <div class="cabecalho-pagina">
   <h1>{{ id() ? 'Editar instrutor' : 'Novo instrutor' }}</h1>
 </div>
-
 @if (erro()) {
   <p class="alerta erro" role="alert">{{ erro() }}</p>
 }
-
 <form class="cartao formulario" [formGroup]="form" (ngSubmit)="salvar()" novalidate>
   <div class="campo">
     <label for="nome">Nome *</label>
-    <input id="nome" formControlName="nome" [class.invalido]="invalido('nome')" />
+    <input
+      id="nome"
+      formControlName="nome"
+      [class.invalido]="invalido('nome')"
+      [attr.aria-invalid]="invalido('nome')"
+      [attr.aria-describedby]="invalido('nome') ? 'erro-nome' : null"
+      type="text"
+    />
     @if (invalido('nome')) {
-      <small class="msg-erro">Informe um nome entre 3 e 80 caracteres.</small>
+      <small class="msg-erro" id="erro-nome">Informe um nome entre 3 e 80 caracteres.</small>
     }
   </div>
-  <!--
-  <div class="linha">
-    <div class="campo">
-      <label for="valorMensal">Preço (R$) *</label>
-      <input
-        id="valorMensal"
-        type="number"
-        step="0.01"
-        formControlName="valorMensal"
-        [class.invalido]="invalido('valorMensal')"
-      />
-      @if (invalido('valorMensal')) {
-        <small class="msg-erro">O preço não pode ser negativo.</small>
-      }
-    </div>
-
-    <div class="campo">
-      <label for="modalidade">Modalidade *</label>
-      <input
-        id="modalidade"
-        formControlName="modalidade"
-        [class.invalido]="invalido('modalidade')"
-      />
-      @if (invalido('modalidade')) {
-        <small class="msg-erro">Informe uma modalidade válida.</small>
-      }
-    </div>
-
-    <div class="campo">
-      <label for="duracaoMeses">Duração (meses) *</label>
-      <select
-        id="duracaoMeses"
-        formControlName="duracaoMeses"
-        [class.invalido]="invalido('duracaoMeses')"
-      >
-        <option value="" disabled>Selecione...</option>
-        @for (c of duracaoMeses; track c) {
-          <option [ngValue]="c">{{ c }}</option>
-        }
-      </select>
-      @if (invalido('duracaoMeses')) {
-        <small class="msg-erro">Escolha uma duração.</small>
-      }
-    </div>
+  <div class="campo">
+    <label for="email">E-mail *</label>
+    <input
+      id="email"
+      formControlName="email"
+      [class.invalido]="invalido('email')"
+      [attr.aria-invalid]="invalido('email')"
+      [attr.aria-describedby]="invalido('email') ? 'erro-email' : null"
+      type="email"
+    />
+    @if (invalido('email')) {
+      <small class="msg-erro" id="erro-email">Informe um e-mail válido.</small>
+    }
   </div>
--->
-
+  <div class="campo">
+    <label for="telefone">Telefone *</label>
+    <input
+      id="telefone"
+      formControlName="telefone"
+      [class.invalido]="invalido('telefone')"
+      [attr.aria-invalid]="invalido('telefone')"
+      [attr.aria-describedby]="invalido('telefone') ? 'erro-telefone' : null"
+      type="tel"
+    />
+    @if (invalido('telefone')) {
+      <small class="msg-erro" id="erro-telefone">Use o formato (51) 99999-9999.</small>
+    }
+  </div>
+  <div class="campo">
+    <label for="cref">CREF *</label>
+    <input
+      id="cref"
+      formControlName="cref"
+      [class.invalido]="invalido('cref')"
+      [attr.aria-invalid]="invalido('cref')"
+      [attr.aria-describedby]="invalido('cref') ? 'erro-cref' : null"
+      type="text"
+    />
+    @if (invalido('cref')) {
+      <small class="msg-erro" id="erro-cref">Informe um CREF entre 6 e 15 caracteres.</small>
+    }
+  </div>
+  <div class="campo">
+    <label for="turno">Turno *</label>
+    <select
+      id="turno"
+      formControlName="turno"
+      [class.invalido]="invalido('turno')"
+      [attr.aria-invalid]="invalido('turno')"
+      [attr.aria-describedby]="invalido('turno') ? 'erro-turno' : null"
+    >
+      <option value="" disabled>Selecione...</option>
+      @for (t of turnos; track t) {
+        <option [value]="t">{{ t }}</option>
+      }
+    </select>
+    @if (invalido('turno')) {
+      <small class="msg-erro" id="erro-turno">Escolha um turno.</small>
+    }
+  </div>
   <div class="acoes-form">
     <a class="botao secundario" routerLink="/instrutores">Cancelar</a>
-    <button type="submit" class="botao" [disabled]="salvando()">
+    <button class="botao" type="submit" [disabled]="salvando() || form.disabled">
       {{ salvando() ? 'Salvando...' : 'Salvar' }}
     </button>
   </div>

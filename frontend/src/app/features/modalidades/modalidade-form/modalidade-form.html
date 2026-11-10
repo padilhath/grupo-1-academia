@@ -1,0 +1,80 @@
+<div class="cabecalho-pagina">
+  <h1>{{ id() ? 'Editar modalidade' : 'Nova modalidade' }}</h1>
+</div>
+@if (erro()) {
+  <p class="alerta erro" role="alert">{{ erro() }}</p>
+}
+<form class="cartao formulario" [formGroup]="form" (ngSubmit)="salvar()" novalidate>
+  <div class="campo">
+    <label for="nome">Nome *</label>
+    <input
+      id="nome"
+      formControlName="nome"
+      [class.invalido]="invalido('nome')"
+      [attr.aria-invalid]="invalido('nome')"
+      [attr.aria-describedby]="invalido('nome') ? 'erro-nome' : null"
+      maxlength="50"
+    />
+    @if (invalido('nome')) {
+      <small class="msg-erro" id="erro-nome">Informe um nome entre 3 e 50 caracteres.</small>
+    }
+  </div>
+  <div class="campo">
+    <label for="descricao">Descrição</label>
+    <textarea
+      id="descricao"
+      formControlName="descricao"
+      [class.invalido]="invalido('descricao')"
+      [attr.aria-invalid]="invalido('descricao')"
+      [attr.aria-describedby]="invalido('descricao') ? 'erro-descricao' : null"
+      rows="3"
+      maxlength="300"
+    ></textarea>
+    @if (invalido('descricao')) {
+      <small class="msg-erro" id="erro-descricao">Use no máximo 300 caracteres.</small>
+    }
+  </div>
+  <div class="campo">
+    <label for="intensidade">Intensidade *</label>
+    <select
+      id="intensidade"
+      formControlName="intensidade"
+      [class.invalido]="invalido('intensidade')"
+      [attr.aria-invalid]="invalido('intensidade')"
+      [attr.aria-describedby]="invalido('intensidade') ? 'erro-intensidade' : null"
+    >
+      <option value="" disabled>Selecione...</option>
+      @for (i of intensidades; track i) {
+        <option [value]="i">{{ i }}</option>
+      }
+    </select>
+    @if (invalido('intensidade')) {
+      <small class="msg-erro" id="erro-intensidade">Escolha uma intensidade.</small>
+    }
+  </div>
+  <div class="campo">
+    <label for="capacidadeMaxima">Capacidade máxima por turma *</label>
+    <input
+      id="capacidadeMaxima"
+      formControlName="capacidadeMaxima"
+      [class.invalido]="invalido('capacidadeMaxima')"
+      [attr.aria-invalid]="invalido('capacidadeMaxima')"
+      [attr.aria-describedby]="invalido('capacidadeMaxima') ? 'erro-capacidadeMaxima' : null"
+      type="number"
+      min="1"
+      max="50"
+      step="1"
+    />
+    @if (invalido('capacidadeMaxima')) {
+      <small class="msg-erro" id="erro-capacidadeMaxima"
+        >Informe um número inteiro entre 1 e 50.</small
+      >
+    }
+  </div>
+  <div class="acoes-form">
+    <a class="botao secundario" routerLink="/modalidades">Cancelar</a>
+    <button class="botao" type="submit" [disabled]="salvando() || form.disabled">
+      {{ salvando() ? 'Salvando...' : 'Salvar' }}
+    </button>
+  </div>
+</form>

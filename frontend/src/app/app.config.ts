@@ -1,3 +1,16 @@
+import { RelatoriosApiService } from './features/relatorios/services/relatorios-api.service';
+import { ModalidadesApiService } from './features/modalidades/services/modalidades-api.service';
+import { AlunosApiService } from './features/alunos/services/alunos-api.service';
+import { provideAppInitializer, inject } from '@angular/core';
+import { withInterceptors } from '@angular/common/http';
+import { AuthService } from './core/auth/auth.service';
+import { authInterceptor } from './core/auth/auth.interceptor';
+import { RelatoriosService } from './features/relatorios/services/relatorios.service';
+import { RelatoriosMockService } from './features/relatorios/services/relatorios-mock.service';
+import { AlunosService } from './features/alunos/services/alunos.service';
+import { AlunosMockService } from './features/alunos/services/aluno-mock.service';
+import { ModalidadesService } from './features/modalidades/services/modalidades.service';
+import { ModalidadesMockService } from './features/modalidades/services/modalidades-mock.service';
 import { provideHttpClient } from '@angular/common/http';
 import { registerLocaleData } from '@angular/common';
 import localePt from '@angular/common/locales/pt';
@@ -22,7 +35,20 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideRouter(routes, withComponentInputBinding()),
-    provideHttpClient(),
+    provideHttpClient(withInterceptors([authInterceptor])),
+    provideAppInitializer(() => inject(AuthService).restaurar()),
+    {
+      provide: RelatoriosService,
+      useClass: environment.usarMock ? RelatoriosMockService : RelatoriosApiService,
+    },
+    {
+      provide: AlunosService,
+      useClass: environment.usarMock ? AlunosMockService : AlunosApiService,
+    },
+    {
+      provide: ModalidadesService,
+      useClass: environment.usarMock ? ModalidadesMockService : ModalidadesApiService,
+    },
     { provide: LOCALE_ID, useValue: 'pt-BR' },
 
     // Escolhe a implementação do serviço conforme o environment.

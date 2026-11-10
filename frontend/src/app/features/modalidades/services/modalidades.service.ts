@@ -1,0 +1,16 @@
+import { Observable } from 'rxjs';
+import { Intensidade, Modalidade, ModalidadeEntrada } from '../modalidade.model';
+
+/**
+ * Contrato do serviço de modalidades.
+ * Os componentes dependem só desta classe abstrata.
+ * Quem decide se os dados vêm do mock ou da API é o app.config.ts.
+ * Assim, trocar o mock pela API (aula 13) não exige mexer nos componentes.
+ */
+export abstract class ModalidadesService {
+  abstract listar(intensidade?: Intensidade, todos?: boolean): Observable<Modalidade[]>;
+  abstract buscarPorId(id: string): Observable<Modalidade>;
+  abstract criar(dados: ModalidadeEntrada): Observable<Modalidade>;
+  abstract atualizar(id: string, dados: Partial<ModalidadeEntrada>): Observable<Modalidade>;
+  abstract remover(id: string): Observable<void>;
+}

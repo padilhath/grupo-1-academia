@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { AuthService } from '../core/auth/auth.service';
+import { Component, inject } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 
 /** Componente de layout: cabeçalho, menu lateral e área de conteúdo (PDF 02, cap. 4). */
@@ -9,6 +10,7 @@ import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
   styleUrl: './layout.css',
 })
 export class Layout {
+  protected readonly auth = inject(AuthService);
   // TODO (aula 01/02): troque pelo nome do sistema do seu grupo
-  protected readonly nomeSistema = 'Projeto Integrador';
+  protected readonly nomeSistema = 'Turma da Bomba — Academia';
 }

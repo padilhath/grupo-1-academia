@@ -1,6 +1,7 @@
+import { AuthService } from '../../../core/auth/auth.service';
 import { CurrencyPipe } from '@angular/common';
 import { Component, inject, OnInit, signal } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { PlanoCard } from '../plano-card/plano-card';
 import { OPCOES_DURACAO_MESES, DuracaoMeses, Plano } from '../plano.model';
 import { PlanosService } from '../services/planos.service';
@@ -13,6 +14,7 @@ import { textoDe } from '../../../core/models/referencia';
   templateUrl: './plano-lista.html',
 })
 export class PlanosLista implements OnInit {
+  protected readonly auth = inject(AuthService);
   private readonly planosService = inject(PlanosService);
 
   protected readonly textoDe = textoDe;
@@ -24,7 +26,10 @@ export class PlanosLista implements OnInit {
   protected readonly carregando = signal(false);
   protected readonly modo = signal<'tabela' | 'cartoes'>('tabela');
 
+  private readonly route = inject(ActivatedRoute);
   ngOnInit(): void {
+    const resultado = this.route.snapshot.queryParamMap.get('resultado');
+    if (resultado === 'salvo') this.sucesso.set('Registro salvo com sucesso.');
     this.carregar();
   }
 

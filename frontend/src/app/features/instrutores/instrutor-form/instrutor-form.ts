@@ -1,7 +1,7 @@
 import { Component, inject, input, OnInit, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import { OPCOES_TURNO, Turno, Instrutor } from '../instrutor.model';
+import { OPCOES_TURNO, Turno, InstrutorEntrada } from '../instrutor.model';
 import { InstrutoresService } from '../services/instrutores.service';
 
 /**
@@ -10,7 +10,7 @@ import { InstrutoresService } from '../services/instrutores.service';
  * feedback rápido ao usuário — mas quem garante é a API.
  */
 @Component({
-  selector: 'app-plano-form',
+  selector: 'app-instrutor-form',
   imports: [ReactiveFormsModule, RouterLink],
   templateUrl: './instrutor-form.html',
 })
@@ -22,7 +22,7 @@ export class InstrutorForm implements OnInit {
   /** Vem da rota :id/editar (withComponentInputBinding). Vazio = cadastro. */
   readonly id = input<string>();
 
-  protected readonly duracaoMeses = OPCOES_TURNO;
+  protected readonly turnos = OPCOES_TURNO;
   protected readonly salvando = signal(false);
   protected readonly erro = signal<string | null>(null);
 
@@ -37,8 +37,12 @@ export class InstrutorForm implements OnInit {
   ngOnInit(): void {
     const id = this.id();
     if (id) {
+      this.form.disable();
       this.instrutoresService.buscarPorId(id).subscribe({
-        next: (p) => this.form.patchValue(p),
+        next: (p) => {
+          this.form.patchValue(p);
+          this.form.enable();
+        },
         error: (e: Error) => this.erro.set(e.message),
       });
     }
@@ -51,6 +55,7 @@ export class InstrutorForm implements OnInit {
   }
 
   protected salvar(): void {
+    if (this.salvando() || this.form.disabled) return;
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       return;
@@ -58,14 +63,14 @@ export class InstrutorForm implements OnInit {
     this.salvando.set(true);
     this.erro.set(null);
 
-    const dados = this.form.getRawValue() as Instrutor;
+    const dados = this.form.getRawValue() as InstrutorEntrada;
     const id = this.id();
     const operacao = id
       ? this.instrutoresService.atualizar(id, dados)
       : this.instrutoresService.criar(dados);
 
     operacao.subscribe({
-      next: () => this.router.navigate(['/instrutores']),
+      next: () => this.router.navigate(['/instrutores'], { queryParams: { resultado: 'salvo' } }),
       error: (e: Error) => {
         this.erro.set(e.message);
         this.salvando.set(false);

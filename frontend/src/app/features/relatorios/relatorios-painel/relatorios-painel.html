@@ -1,0 +1,75 @@
+@if (!compacto()) {
+  <h1>Relatórios</h1>
+}
+@if (erro()) {
+  <p class="alerta erro" role="alert">{{ erro() }}</p>
+  <button class="botao" (click)="carregar()">Tentar novamente</button>
+}
+@if (carregando()) {
+  <p class="carregando" role="status">Carregando indicadores...</p>
+} @else if (dados(); as painel) {
+  <div class="grade-cartoes">
+    <app-resumo-card titulo="Alunos ativos" [valor]="painel.resumo.alunos" />
+    <app-resumo-card titulo="Matrículas ativas" [valor]="painel.resumo.matriculasAtivas" />
+    <app-resumo-card titulo="Matrículas trancadas" [valor]="painel.resumo.matriculasTrancadas" />
+  </div>
+  @if (
+    painel.resumo.alunos === 0 &&
+    painel.resumo.matriculasAtivas === 0 &&
+    painel.resumo.matriculasTrancadas === 0
+  ) {
+    <p class="vazio">
+      Ainda não há dados para os indicadores. Cadastre alunos e matrículas para começar.
+    </p>
+  }
+  @if (!compacto()) {
+    <h2>Receita mensal por plano</h2>
+    @if (painel.receitaPorPlano.length === 0) {
+      <p class="vazio">Nenhuma matrícula ativa para calcular a receita.</p>
+    } @else {
+      <div class="tabela-container">
+        <table class="tabela">
+          <thead>
+            <tr>
+              <th scope="col">Plano</th>
+              <th scope="col">Matrículas ativas</th>
+              <th scope="col">Receita mensal</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (p of painel.receitaPorPlano; track p.plano) {
+              <tr>
+                <td>{{ p.plano }}</td>
+                <td>{{ p.matriculas }}</td>
+                <td>{{ p.receitaMensal | currency: 'BRL' }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+    <h2>Alunos ativos por objetivo</h2>
+    @if (painel.alunosPorObjetivo.length === 0) {
+      <p class="vazio">Nenhum aluno ativo para agrupar por objetivo.</p>
+    } @else {
+      <div class="tabela-container">
+        <table class="tabela">
+          <thead>
+            <tr>
+              <th scope="col">Objetivo</th>
+              <th scope="col">Alunos</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (o of painel.alunosPorObjetivo; track o._id) {
+              <tr>
+                <td>{{ o._id }}</td>
+                <td>{{ o.quantidade }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  }
+}

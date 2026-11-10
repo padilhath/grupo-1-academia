@@ -4,7 +4,11 @@
   <p class="preco">{{ plano().valorMensal | currency: 'BRL' }}</p>
 
   <div class="acoes">
-    <a class="botao secundario" [routerLink]="['/planos', plano()._id, 'editar']">Editar</a>
-    <button type="button" class="botao perigo" (click)="pedirExclusao()">Excluir</button>
+    @if (auth.podeEditar()) {
+      <a class="botao secundario" [routerLink]="['/planos', plano()._id, 'editar']">Editar</a>
+    }
+    @if (auth.admin()) {
+      <button type="button" class="botao perigo" (click)="pedirExclusao()">Excluir</button>
+    }
   </div>
 </article>

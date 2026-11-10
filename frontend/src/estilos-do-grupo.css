@@ -1,8 +1,63 @@
-/*
- * Estilos do GRUPO.
- * Este arquivo é carregado depois do styles.css, então o que for definido
- * aqui vence. Quem cuida do padrão visual é o papel UX/UI e Acessibilidade.
- *
- * Exemplo: trocar a cor principal do sistema
- * :root { --cor-primaria: #6a1b9a; }
- */
+:root {
+  --cor-secundaria: #0d6c6c;
+}
+a:focus-visible,
+button:focus-visible {
+  outline: 3px solid #9a6700;
+  outline-offset: 3px;
+}
+.barra-filtros,
+.acoes {
+  flex-wrap: wrap;
+}
+.campo {
+  min-width: 0;
+}
+input,
+select,
+textarea {
+  max-width: 100%;
+}
+.cartao-produto {
+  overflow-wrap: anywhere;
+}
+.indicador h2 {
+  font-size: 1rem;
+  margin-top: 0;
+}
+.indicador p {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 0;
+}
+.aviso-mock {
+  color: var(--cor-texto-suave);
+}
+@media (max-width: 700px) {
+  .barra-filtros {
+    align-items: flex-start;
+  }
+  .alternar-modo {
+    margin-left: 0;
+  }
+  .linha {
+    flex-direction: column;
+  }
+  .grade-cartoes {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .cartao {
+    padding: 16px;
+  }
+}
+
+.pagina-acesso {
+  max-width: 600px;
+  margin: 32px auto;
+  padding: 16px;
+}
+.topo .acoes {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}

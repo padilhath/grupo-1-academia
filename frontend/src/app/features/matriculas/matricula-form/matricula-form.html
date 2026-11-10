@@ -1,12 +1,12 @@
 <div class="cabecalho-pagina">
-  <h1>{{ id() ? 'Editar plano' : 'Novo plano' }}</h1>
+  <h1>{{ id() ? 'Editar matrícula' : 'Nova matrícula' }}</h1>
 </div>
 
 @if (erro()) {
   <p class="alerta erro" role="alert">{{ erro() }}</p>
 }
 
-<form class="formulario cartao" [formGroup]="form" (ngSubmit)="salvar()">
+<form class="formulario cartao" [formGroup]="form" (ngSubmit)="salvar()" novalidate>
   <div class="campo">
     <label for="aluno">Aluno *</label>
 
@@ -18,7 +18,7 @@
     >
       <option value="" disabled>Selecione...</option>
 
-      @for (aluno of alunos; track aluno._id) {
+      @for (aluno of alunos(); track aluno._id) {
         <option [value]="aluno._id">{{ aluno.nome }}</option>
       }
     </select>
@@ -39,7 +39,7 @@
     >
       <option value="" disabled>Selecione...</option>
 
-      @for (plano of planos; track plano._id) {
+      @for (plano of planos(); track plano._id) {
         <option [value]="plano._id">{{ plano.nome }}</option>
       }
     </select>
@@ -60,7 +60,7 @@
     >
       <option value="" disabled>Selecione...</option>
 
-      @for (instrutor of instrutores; track instrutor._id) {
+      @for (instrutor of instrutores(); track instrutor._id) {
         <option [value]="instrutor._id">{{ instrutor.nome }}</option>
       }
     </select>

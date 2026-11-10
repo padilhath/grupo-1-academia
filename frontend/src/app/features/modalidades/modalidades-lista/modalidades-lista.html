@@ -1,0 +1,88 @@
+<div class="cabecalho-pagina">
+  <h1>Modalidades</h1>
+  @if (auth.podeEditar()) {
+    <a class="botao" routerLink="novo">Nova modalidade</a>
+  }
+</div>
+
+<div class="barra-filtros">
+  <label for="filtro-categoria">Intensidade</label>
+  <select id="filtro-categoria" [ngModel]="filtro()" (ngModelChange)="filtrar($event)">
+    <option [ngValue]="null">Todas</option>
+    @for (c of intensidade; track c) {
+      <option [ngValue]="c">{{ c }}</option>
+    }
+  </select>
+
+  <div class="alternar-modo" role="group" aria-label="Forma de exibição">
+    <button
+      type="button"
+      class="botao secundario"
+      [class.ativo]="modo() === 'tabela'"
+      (click)="modo.set('tabela')"
+    >
+      Tabela
+    </button>
+    <button
+      type="button"
+      class="botao secundario"
+      [class.ativo]="modo() === 'cartoes'"
+      (click)="modo.set('cartoes')"
+    >
+      Cartões
+    </button>
+  </div>
+</div>
+
+@if (sucesso()) {
+  <p class="alerta sucesso" role="status">{{ sucesso() }}</p>
+}
+
+@if (erro()) {
+  <p class="alerta erro" role="alert">{{ erro() }}</p>
+}
+
+@if (carregando()) {
+  <p class="carregando">Carregando modalidades...</p>
+} @else if (modalidades().length === 0) {
+  <p class="vazio">Nenhuma modalidade encontrado.</p>
+} @else if (modo() === 'cartoes') {
+  <div class="grade-cartoes">
+    @for (p of modalidades(); track p._id) {
+      <app-modalidade-card [modalidade]="p" (excluir)="excluir($event)" />
+    }
+  </div>
+} @else {
+  <div class="tabela-container">
+    <table class="tabela">
+      <thead>
+        <tr>
+          <th>Nome</th>
+          <th>Intensidade</th>
+          <th>Capacidade máxima por turma</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        @for (p of modalidades(); track p._id) {
+          <tr>
+            <td>{{ p.nome }}</td>
+            <td><app-etiqueta [texto]="p.intensidade" /></td>
+            <td>{{ p.capacidadeMaxima }}</td>
+            <td>
+              <div class="acoes">
+                @if (auth.podeEditar()) {
+                  <a class="botao secundario" [routerLink]="[p._id, 'editar']">Editar</a>
+                }
+                @if (auth.admin()) {
+                  <button type="button" class="botao perigo" (click)="excluir(p)">Excluir</button>
+                }
+              </div>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+}

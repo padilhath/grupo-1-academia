@@ -1,10 +1,12 @@
 <div class="cabecalho-pagina">
   <h1>Planos</h1>
-  <a class="botao" routerLink="novo">Novo plano</a>
+  @if (auth.podeEditar()) {
+    <a class="botao" routerLink="novo">Novo plano</a>
+  }
 </div>
 
 <div class="barra-filtros">
-  <label for="filtro-categoria">Categoria</label>
+  <label for="filtro-categoria">Duração (meses)</label>
   <select id="filtro-categoria" [ngModel]="filtro()" (ngModelChange)="filtrar($event)">
     <option [ngValue]="null">Todas</option>
     @for (c of duracaoMeses; track c) {
@@ -45,7 +47,6 @@
 } @else if (planos().length === 0) {
   <p class="vazio">Nenhum plano encontrado.</p>
 } @else if (modo() === 'cartoes') {
-  <!-- Componente filho reutilizável: o pai passa o plano e escuta o evento -->
   <div class="grade-cartoes">
     @for (p of planos(); track p._id) {
       <app-plano-card [plano]="p" (excluir)="excluir($event)" />
@@ -58,7 +59,7 @@
         <tr>
           <th>Nome</th>
           <th>Duração (meses)</th>
-          <th>Preço</th>
+          <th>Valor mensal (R$)</th>
           <th>Modalidade</th>
           <th>Ações</th>
         </tr>
@@ -75,8 +76,12 @@
             <td>{{ textoDe(p.modalidade) }}</td>
             <td>
               <div class="acoes">
-                <a class="botao secundario" [routerLink]="[p._id, 'editar']">Editar</a>
-                <button type="button" class="botao perigo" (click)="excluir(p)">Excluir</button>
+                @if (auth.podeEditar()) {
+                  <a class="botao secundario" [routerLink]="[p._id, 'editar']">Editar</a>
+                }
+                @if (auth.admin()) {
+                  <button type="button" class="botao perigo" (click)="excluir(p)">Excluir</button>
+                }
               </div>
             </td>
           </tr>

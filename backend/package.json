@@ -1,7 +1,7 @@
 {
   "name": "projeto-integrador-api",
   "version": "0.0.1",
-  "description": "API do Projeto Integrador – Sprint 5",
+  "description": "API da academia - Turma da Bomba",
   "author": "",
   "private": true,
   "license": "UNLICENSED",
@@ -16,15 +16,18 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
-    "seed": "ts-node src/seed/seed.ts"
+    "seed": "ts-node src/seed/seed.ts",
+    "test:e2e": "node --test --test-timeout=45000 --require ts-node/register test/academia.e2e-spec.ts"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",
     "@nestjs/config": "^4.0.4",
     "@nestjs/core": "^11.0.1",
+    "@nestjs/jwt": "^11.0.2",
     "@nestjs/mongoose": "^11.0.4",
     "@nestjs/platform-express": "^11.0.1",
     "@nestjs/swagger": "^11.4.7",
+    "bcryptjs": "^3.0.3",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.15.1",
     "dotenv": "^18.0.8",
@@ -55,7 +58,8 @@
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
     "typescript": "^5.7.3",
-    "typescript-eslint": "^8.20.0"
+    "typescript-eslint": "^8.20.0",
+    "expect": "^30.5.2"
   },
   "jest": {
     "moduleFileExtensions": [

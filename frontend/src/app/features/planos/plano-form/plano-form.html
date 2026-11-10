@@ -11,13 +11,13 @@
     <label for="nome">Nome *</label>
     <input id="nome" formControlName="nome" [class.invalido]="invalido('nome')" />
     @if (invalido('nome')) {
-      <small class="msg-erro">Informe um nome entre 3 e 80 caracteres.</small>
+      <small class="msg-erro">Informe um nome entre 3 e 60 caracteres.</small>
     }
   </div>
 
   <div class="linha">
     <div class="campo">
-      <label for="valorMensal">Preço (R$) *</label>
+      <label for="valorMensal">Valor mensal (R$) *</label>
       <input
         id="valorMensal"
         type="number"
@@ -26,11 +26,10 @@
         [class.invalido]="invalido('valorMensal')"
       />
       @if (invalido('valorMensal')) {
-        <small class="msg-erro">O preço não pode ser negativo.</small>
+        <small class="msg-erro">O valor mensal deve ser no mínimo R$ 1,00.</small>
       }
     </div>
 
-    <!-- pet-form.html -->
     <div class="campo">
       <label for="modalidade">Modalidade *</label>
       <select
@@ -44,7 +43,7 @@
         }
       </select>
       @if (invalido('modalidade')) {
-        <small class="msg-erro">Escolha o modalidade.</small>
+        <small class="msg-erro">Escolha uma modalidade.</small>
       }
     </div>
 

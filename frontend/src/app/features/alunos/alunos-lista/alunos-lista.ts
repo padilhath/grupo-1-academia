@@ -1,80 +1,71 @@
+import { AuthService } from '../../../core/auth/auth.service';
 import { DatePipe } from '@angular/common';
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { Aluno, Objetivo, OPCOES_OBJETIVO } from '../aluno.model';
-import { AlunosMockService } from '../services/aluno-mock.service';
+import { OPCOES_OBJETIVO, Objetivo, Aluno } from '../aluno.model';
+import { FormsModule } from '@angular/forms';
+import { AlunoCard } from '../aluno-card/aluno-card';
+import { AlunosService } from '../services/alunos.service';
 
+/** Tela de listagem (componente de página — PDF 02, cap. 4). */
 @Component({
   selector: 'app-alunos-lista',
-  imports: [DatePipe, RouterLink],
+  imports: [DatePipe, RouterLink, AlunoCard, FormsModule],
   templateUrl: './alunos-lista.html',
 })
-export class AlunosLista {
-  protected readonly opcoesObjetivo = OPCOES_OBJETIVO;
-  private readonly alunosService = inject(AlunosMockService);
+export class AlunosLista implements OnInit {
+  protected readonly auth = inject(AuthService);
+  private readonly alunosService = inject(AlunosService);
 
+  protected readonly objetivos = OPCOES_OBJETIVO;
+  // Estado da tela com signals (PDF 02, cap. 11)
   protected readonly alunos = signal<Aluno[]>([]);
-  protected readonly carregando = signal(true);
-  protected readonly objetivo = signal<Objetivo | ''>('');
+  protected readonly carregando = signal(false);
+  protected readonly erro = signal<string | null>(null);
+  protected readonly sucesso = signal<string | null>(null);
+  protected readonly filtro = signal<Objetivo | null>(null);
+  // Estado LOCAL da tela: como mostrar a lista (aula 02 — @if e componente filho)
+  protected readonly modo = signal<'tabela' | 'cartoes'>('tabela');
 
-  protected readonly alunosFiltrados = computed(() => {
-    const objetivo = this.objetivo();
-
-    return this.alunos().filter(
-      (aluno) => aluno.ativo && (!objetivo || aluno.objetivo === objetivo),
-    );
-  });
-
-  constructor() {
-    const resultado = inject(ActivatedRoute).snapshot.queryParamMap.get('resultado');
-
-    if (resultado === 'cadastrado') {
-      this.sucesso.set('Aluno cadastrado com sucesso.');
-    } else if (resultado === 'editado') {
-      this.sucesso.set('Aluno atualizado com sucesso.');
-    }
-
-    void this.carregar();
+  private readonly route = inject(ActivatedRoute);
+  ngOnInit(): void {
+    const resultado = this.route.snapshot.queryParamMap.get('resultado');
+    if (resultado === 'salvo') this.sucesso.set('Registro salvo com sucesso.');
+    this.carregar();
   }
 
-  protected async carregar(): Promise<void> {
+  protected filtrar(valor: Objetivo | null): void {
+    this.filtro.set(valor);
+    this.carregar();
+  }
+
+  protected carregar(): void {
     this.carregando.set(true);
-    this.erro.set('');
-
-    try {
-      const alunos = this.alunosService.listar();
-      this.alunos.set(alunos);
-    } catch (erro) {
-      this.erro.set(erro instanceof Error ? erro.message : 'Não foi possível carregar os alunos.');
-    } finally {
-      this.carregando.set(false);
-    }
+    this.erro.set(null);
+    this.alunosService.listar(this.filtro() ?? undefined).subscribe({
+      next: (lista) => {
+        this.alunos.set(lista);
+        this.carregando.set(false);
+      },
+      error: (e: Error) => {
+        this.erro.set(e.message);
+        this.carregando.set(false);
+      },
+    });
   }
 
-  protected filtrar(event: Event): void {
-    const select = event.target as HTMLSelectElement;
-    this.objetivo.set(select.value as Objetivo | '');
-  }
-
-  protected readonly sucesso = signal('');
-  protected readonly erro = signal('');
-
-  protected inativar(aluno: Aluno): void {
-    const confirmado = window.confirm(`Deseja inativar o aluno ${aluno.nome}?`);
-
-    if (!confirmado) {
+  protected excluir(aluno: Aluno): void {
+    if (!confirm(`Excluir o aluno "${aluno.nome}"?`)) {
       return;
     }
-
-    this.sucesso.set('');
-    this.erro.set('');
-
-    try {
-      this.alunosService.remover(aluno._id);
-      this.alunos.set(this.alunosService.listar());
-      this.sucesso.set('Aluno inativado com sucesso.');
-    } catch (erro) {
-      this.erro.set(erro instanceof Error ? erro.message : 'Não foi possível inativar o aluno.');
-    }
+    this.erro.set(null);
+    this.sucesso.set(null);
+    this.alunosService.remover(aluno._id).subscribe({
+      next: () => {
+        this.sucesso.set(`Aluno "${aluno.nome}" excluído.`);
+        this.carregar();
+      },
+      error: (e: Error) => this.erro.set(e.message),
+    });
   }
 }

@@ -1,0 +1,14 @@
+<article class="cartao-produto">
+  <span class="etiqueta">{{ modalidade().intensidade }}</span>
+  <h2>{{ modalidade().nome }}</h2>
+  <p>{{ modalidade().descricao || 'Sem descrição.' }}</p>
+  <p>Capacidade: {{ modalidade().capacidadeMaxima }} alunos por turma</p>
+  <div class="acoes">
+    <a class="botao secundario" [routerLink]="['/modalidades', modalidade()._id, 'editar']"
+      >Editar</a
+    >
+    @if (auth.admin()) {
+      <button type="button" class="botao perigo" (click)="pedirExclusao()">Excluir</button>
+    }
+  </div>
+</article>

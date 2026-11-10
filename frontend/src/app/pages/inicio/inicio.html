@@ -1,3 +1,8 @@
-<h1>Bem-vindo</h1>
-<p>Este é o projeto base do Projeto Integrador.</p>
-<!-- TODO (aula 11): o aluno do módulo de Relatórios coloca aqui os indicadores do sistema -->
+<h1>Turma da Bomba</h1>
+<p>Gerencie alunos, planos, matrículas, instrutores e modalidades da academia.</p>
+@if (auth.admin()) {
+  <app-relatorios-painel [compacto]="true" />
+  <p><a routerLink="/relatorios">Ver relatórios completos</a></p>
+} @else {
+  <p>Use o menu para consultar os cadastros da academia.</p>
+}

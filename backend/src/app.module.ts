@@ -1,27 +1,33 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
-import { ProdutosModule } from './produtos/produtos.module';
-
+import { AlunosModule } from './alunos/alunos.module';
+import { PlanosModule } from './planos/planos.module';
+import { InstrutoresModule } from './instrutores/instrutores.module';
+import { ModalidadesModule } from './modalidades/modalidades.module';
+import { MatriculasModule } from './matriculas/matriculas.module';
+import { RelatoriosModule } from './relatorios/relatorios.module';
+import { AuthModule } from './auth/auth.module';
 @Module({
   imports: [
-    // Lê o arquivo .env (copie o .env.example para .env)
     ConfigModule.forRoot({ isGlobal: true }),
-
-    // Conexão com o MongoDB usando a variável MONGODB_URI
     MongooseModule.forRootAsync({
       inject: [ConfigService],
       useFactory: (config: ConfigService) => ({
         uri: config.get<string>(
           'MONGODB_URI',
-          'mongodb://localhost:27017/projeto-integrador',
+          'mongodb://127.0.0.1:27017/projeto-integrador',
         ),
+        serverSelectionTimeoutMS: 5000,
       }),
     }),
-
-    // Módulo de exemplo. Cada aluno cria o módulo do seu domínio
-    // seguindo este modelo e o registra aqui.
-    ProdutosModule,
+    AlunosModule,
+    PlanosModule,
+    InstrutoresModule,
+    ModalidadesModule,
+    MatriculasModule,
+    RelatoriosModule,
+    AuthModule,
   ],
 })
 export class AppModule {}

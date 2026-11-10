@@ -1,0 +1,75 @@
+<div class="pagina-acesso">
+  <h1>{{ cadastro() ? 'Cadastro de usuário' : 'Entrar' }}</h1>
+  @if (cadastro() && !administrativo()) {
+    <p>Sua conta terá acesso de consulta aos cadastros.</p>
+  }
+  @if (erro()) {
+    <p class="alerta erro" role="alert">{{ erro() }}</p>
+  }
+  @if (mensagem()) {
+    <p class="alerta sucesso" role="status">{{ mensagem() }}</p>
+  }
+  <form class="cartao formulario" [formGroup]="form" (ngSubmit)="enviar()" novalidate>
+    @if (cadastro()) {
+      <div class="campo">
+        <label for="nome">Nome *</label
+        ><input
+          id="nome"
+          formControlName="nome"
+          autocomplete="name"
+          [attr.aria-invalid]="invalido('nome')"
+        />
+        @if (invalido('nome')) {
+          <small class="msg-erro">Informe um nome entre 3 e 80 caracteres.</small>
+        }
+      </div>
+    }
+    <div class="campo">
+      <label for="email">E-mail *</label
+      ><input
+        id="email"
+        type="email"
+        formControlName="email"
+        autocomplete="email"
+        [attr.aria-invalid]="invalido('email')"
+      />
+      @if (invalido('email')) {
+        <small class="msg-erro">Informe um e-mail válido.</small>
+      }
+    </div>
+    <div class="campo">
+      <label for="senha">Senha *</label
+      ><input
+        id="senha"
+        type="password"
+        formControlName="senha"
+        [autocomplete]="cadastro() ? 'new-password' : 'current-password'"
+        [attr.aria-invalid]="invalido('senha')"
+      />
+      @if (invalido('senha')) {
+        <small class="msg-erro">{{
+          cadastro() ? 'Use de 8 a 72 caracteres.' : 'Informe sua senha (até 72 caracteres).'
+        }}</small>
+      }
+    </div>
+    @if (administrativo()) {
+      <div class="campo">
+        <label for="perfil">Perfil *</label
+        ><select id="perfil" formControlName="perfil">
+          <option value="consulta">Consulta</option>
+          <option value="atendente">Atendente</option>
+          <option value="admin">Administrador</option>
+        </select>
+      </div>
+    }
+    <div class="acoes-form">
+      <a
+        class="botao secundario"
+        [routerLink]="administrativo() ? '/' : cadastro() ? '/login' : '/cadastro'"
+        >{{ administrativo() ? 'Voltar' : cadastro() ? 'Voltar para entrar' : 'Criar conta' }}</a
+      ><button type="submit" class="botao" [disabled]="enviando()">
+        {{ enviando() ? 'Aguarde...' : cadastro() ? 'Cadastrar' : 'Entrar' }}
+      </button>
+    </div>
+  </form>
+</div>

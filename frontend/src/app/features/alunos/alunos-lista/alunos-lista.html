@@ -1,6 +1,37 @@
 <div class="cabecalho-pagina">
   <h1>Alunos</h1>
-  <a class="botao" routerLink="/alunos/novo">Novo aluno</a>
+  @if (auth.podeEditar()) {
+    <a class="botao" routerLink="novo">Novo aluno</a>
+  }
+</div>
+
+<div class="barra-filtros">
+  <label for="filtro-categoria">Objetivo</label>
+  <select id="filtro-categoria" [ngModel]="filtro()" (ngModelChange)="filtrar($event)">
+    <option [ngValue]="null">Todas</option>
+    @for (c of objetivos; track c) {
+      <option [ngValue]="c">{{ c }}</option>
+    }
+  </select>
+
+  <div class="alternar-modo" role="group" aria-label="Forma de exibição">
+    <button
+      type="button"
+      class="botao secundario"
+      [class.ativo]="modo() === 'tabela'"
+      (click)="modo.set('tabela')"
+    >
+      Tabela
+    </button>
+    <button
+      type="button"
+      class="botao secundario"
+      [class.ativo]="modo() === 'cartoes'"
+      (click)="modo.set('cartoes')"
+    >
+      Cartões
+    </button>
+  </div>
 </div>
 
 @if (sucesso()) {
@@ -11,54 +42,45 @@
   <p class="alerta erro" role="alert">{{ erro() }}</p>
 }
 
-<div class="barra-filtros">
-  <label for="objetivo">Filtrar por objetivo</label>
-
-  <select id="objetivo" [value]="objetivo()" (change)="filtrar($event)">
-    <option value="">Todos os objetivos</option>
-
-    @for (opcao of opcoesObjetivo; track opcao) {
-      <option [value]="opcao">{{ opcao }}</option>
-    }
-  </select>
-</div>
-
 @if (carregando()) {
-  <p role="status">Carregando alunos...</p>
-} @else if (erro() && alunos().length === 0) {
-  <button type="button" (click)="carregar()">Tentar novamente</button>
-} @else if (alunosFiltrados().length === 0) {
-  <p role="status">Nenhum aluno encontrado.</p>
+  <p class="carregando">Carregando alunos...</p>
+} @else if (alunos().length === 0) {
+  <p class="vazio">Nenhum aluno encontrado.</p>
+} @else if (modo() === 'cartoes') {
+  <div class="grade-cartoes">
+    @for (p of alunos(); track p._id) {
+      <app-aluno-card [aluno]="p" (excluir)="excluir($event)" />
+    }
+  </div>
 } @else {
   <div class="tabela-container">
     <table class="tabela">
       <thead>
         <tr>
-          <th scope="col">Nome</th>
-          <th scope="col">E-mail</th>
-          <th scope="col">Telefone</th>
-          <th scope="col">Data de nascimento</th>
-          <th scope="col">Ações</th>
+          <th>Nome</th>
+          <th>E-mail</th>
+          <th>Telefone</th>
+          <th>Data de nascimento</th>
+          <th>Objetivo</th>
+          <th>Ações</th>
         </tr>
       </thead>
-
       <tbody>
-        @for (aluno of alunosFiltrados(); track aluno._id) {
+        @for (p of alunos(); track p._id) {
           <tr>
-            <td>{{ aluno.nome }}</td>
-            <td>{{ aluno.email }}</td>
-            <td>{{ aluno.telefone }}</td>
-            <td>
-              {{ aluno.dataNascimento | date: 'dd/MM/yyyy' : 'UTC' }}
-            </td>
+            <td>{{ p.nome }}</td>
+            <td>{{ p.email }}</td>
+            <td>{{ p.telefone }}</td>
+            <td>{{ p.dataNascimento | date: 'dd/MM/yyyy' : 'UTC' }}</td>
+            <td>{{ p.objetivo }}</td>
             <td>
               <div class="acoes">
-                <a class="botao secundario" [routerLink]="['/alunos', aluno._id, 'editar']">
-                  Editar
-                </a>
-                <button class="botao perigo" type="button" (click)="inativar(aluno)">
-                  Inativar
-                </button>
+                @if (auth.podeEditar()) {
+                  <a class="botao secundario" [routerLink]="[p._id, 'editar']">Editar</a>
+                }
+                @if (auth.admin()) {
+                  <button type="button" class="botao perigo" (click)="excluir(p)">Excluir</button>
+                }
               </div>
             </td>
           </tr>

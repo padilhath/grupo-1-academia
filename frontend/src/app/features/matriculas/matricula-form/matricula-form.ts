@@ -1,9 +1,13 @@
+import { forkJoin } from 'rxjs';
+import { idDe } from '../../../core/models/referencia';
+import { AlunosService } from '../../alunos/services/alunos.service';
+import { PlanosService } from '../../planos/services/planos.service';
+import { InstrutoresService } from '../../instrutores/services/instrutores.service';
 import { Component, inject, input, OnInit, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { MatriculaEntrada } from '../matricula.model';
 import { MatriculasService } from '../services/matriculas.service';
-import { Referencia } from '../../../core/models/referencia';
 
 @Component({
   selector: 'app-matricula-form',
@@ -18,37 +22,48 @@ export class MatriculaForm implements OnInit {
   readonly id = input<string>();
 
   protected readonly form = this.fb.nonNullable.group({
-    aluno: ['' as Referencia, Validators.required],
-    plano: ['' as Referencia, Validators.required],
-    instrutor: ['' as Referencia, Validators.required],
+    aluno: ['', Validators.required],
+    plano: ['', Validators.required],
+    instrutor: ['', Validators.required],
     dataInicio: ['', Validators.required],
   });
   protected readonly erro = signal<string | null>(null);
   protected readonly salvando = signal(false);
 
-  protected readonly alunos = [
-    { _id: '1', nome: 'Aluno de exemplo 1' },
-    { _id: '2', nome: 'Aluno de exemplo 2' },
-    { _id: '3', nome: 'Aluno de exemplo 3' },
-  ];
-
-  protected readonly planos = [
-    { _id: '1', nome: 'Plano de exemplo 1' },
-    { _id: '2', nome: 'Plano de exemplo 2' },
-    { _id: '3', nome: 'Plano de exemplo 3' },
-  ];
-
-  protected readonly instrutores = [
-    { _id: '1', nome: 'Instrutor de exemplo 1' },
-    { _id: '2', nome: 'Instrutor de exemplo 2' },
-    { _id: '3', nome: 'Instrutor de exemplo 3' },
-  ];
+  private readonly alunosService = inject(AlunosService);
+  private readonly planosService = inject(PlanosService);
+  private readonly instrutoresService = inject(InstrutoresService);
+  protected readonly alunos = signal<{ _id: string; nome: string }[]>([]);
+  protected readonly planos = signal<{ _id: string; nome: string }[]>([]);
+  protected readonly instrutores = signal<{ _id: string; nome: string }[]>([]);
 
   ngOnInit(): void {
+    forkJoin({
+      alunos: this.alunosService.listar(),
+      planos: this.planosService.listar(),
+      instrutores: this.instrutoresService.listar(),
+    }).subscribe({
+      next: (listas) => {
+        this.alunos.set(listas.alunos);
+        this.planos.set(listas.planos);
+        this.instrutores.set(listas.instrutores);
+      },
+      error: (e: Error) => this.erro.set(e.message),
+    });
     const id = this.id();
     if (id) {
+      this.form.disable();
       this.service.buscarPorId(id).subscribe({
-        next: (p) => this.form.patchValue(p),
+        next: (p) => {
+          this.form.patchValue({
+            ...p,
+            aluno: idDe(p.aluno),
+            plano: idDe(p.plano),
+            instrutor: idDe(p.instrutor),
+            dataInicio: p.dataInicio.slice(0, 10),
+          });
+          this.form.enable();
+        },
         error: (e: Error) => this.erro.set(e.message),
       });
     }
@@ -60,6 +75,7 @@ export class MatriculaForm implements OnInit {
   }
 
   protected salvar(): void {
+    if (this.salvando() || this.form.disabled) return;
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       return;
@@ -72,7 +88,7 @@ export class MatriculaForm implements OnInit {
     const operacao = id ? this.service.atualizar(id, dados) : this.service.criar(dados);
 
     operacao.subscribe({
-      next: () => this.router.navigate(['/planos']),
+      next: () => this.router.navigate(['/matriculas'], { queryParams: { resultado: 'salvo' } }),
       error: (e: Error) => {
         this.erro.set(e.message);
         this.salvando.set(false);

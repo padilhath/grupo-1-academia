@@ -1,10 +1,12 @@
 <div class="cabecalho-pagina">
   <h1>Matrículas</h1>
-  <a class="botao" routerLink="/matriculas/novo">Nova matrícula </a>
+  @if (auth.podeEditar()) {
+    <a class="botao" routerLink="/matriculas/novo">Nova matrícula </a>
+  }
 </div>
 
 <div class="barra-filtros">
-  <label for="filtro-categoria">Categoria</label>
+  <label for="filtro-categoria">Status</label>
   <select id="filtro-categoria" [ngModel]="filtro()" (ngModelChange)="filtrar($event)">
     <option [ngValue]="null">Todas</option>
     @for (c of status; track c) {
@@ -41,14 +43,13 @@
 }
 
 @if (carregando()) {
-  <p class="carregando">Carregando matriculas...</p>
+  <p class="carregando">Carregando matrículas...</p>
 } @else if (matriculas().length === 0) {
   <p class="vazio">Nenhuma matrícula encontrada.</p>
 } @else if (modo() === 'cartoes') {
-  <!-- Componente filho reutilizável: o pai passa o plano e escuta o evento -->
   <div class="grade-cartoes">
     @for (p of matriculas(); track p._id) {
-      <app-matricula-card [matricula]="p" />
+      <app-matricula-card [matricula]="p" (cancelar)="cancelar($event)" />
     }
   </div>
 } @else {
@@ -89,19 +90,26 @@
 
             <td>
               <div class="acoes">
-                <a class="botao secundario" [routerLink]="['/matriculas', matricula._id, 'editar']">
-                  Editar
-                </a>
+                @if (auth.podeEditar()) {
+                  <a
+                    class="botao secundario"
+                    [routerLink]="['/matriculas', matricula._id, 'editar']"
+                  >
+                    Editar
+                  </a>
+                }
 
                 @for (novo of transicoes[matricula.status]; track novo) {
-                  <button
-                    class="botao"
-                    [class.perigo]="novo === 'cancelada'"
-                    type="button"
-                    (click)="mudarStatus(matricula, novo)"
-                  >
-                    {{ nomesAcoes[novo] }}
-                  </button>
+                  @if (auth.podeEditar()) {
+                    <button
+                      class="botao"
+                      [class.perigo]="novo === 'cancelada'"
+                      type="button"
+                      (click)="mudarStatus(matricula, novo)"
+                    >
+                      {{ nomesAcoes[novo] }}
+                    </button>
+                  }
                 }
               </div>
             </td>

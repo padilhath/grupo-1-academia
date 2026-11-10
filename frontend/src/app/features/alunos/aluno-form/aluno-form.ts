@@ -1,23 +1,30 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, input, OnInit, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { AlunoEntrada, Objetivo, OPCOES_OBJETIVO } from '../aluno.model';
-import { AlunosMockService } from '../services/aluno-mock.service';
+import { Router, RouterLink } from '@angular/router';
+import { OPCOES_OBJETIVO, Objetivo, AlunoEntrada } from '../aluno.model';
+import { AlunosService } from '../services/alunos.service';
 
+/**
+ * Formulário reativo de cadastro e edição (PDF 02, cap. 7).
+ * As mesmas regras do DTO do back-end são validadas aqui para dar
+ * feedback rápido ao usuário — mas quem garante é a API.
+ */
 @Component({
   selector: 'app-aluno-form',
   imports: [ReactiveFormsModule, RouterLink],
   templateUrl: './aluno-form.html',
 })
-export class AlunoForm {
+export class AlunoForm implements OnInit {
   private readonly fb = inject(FormBuilder);
-  private readonly alunosService = inject(AlunosMockService);
-  private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
+  private readonly alunosService = inject(AlunosService);
 
-  protected readonly id = this.route.snapshot.paramMap.get('id');
+  /** Vem da rota :id/editar (withComponentInputBinding). Vazio = cadastro. */
+  readonly id = input<string>();
+
   protected readonly opcoesObjetivo = OPCOES_OBJETIVO;
-  protected readonly erro = signal('');
+  protected readonly salvando = signal(false);
+  protected readonly erro = signal<string | null>(null);
 
   protected readonly form = this.fb.nonNullable.group({
     nome: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(80)]],
@@ -27,68 +34,44 @@ export class AlunoForm {
     objetivo: ['' as Objetivo | '', Validators.required],
   });
 
-  constructor() {
-    if (this.id) {
-      try {
-        const aluno = this.alunosService.buscarPorId(this.id);
-
-        this.form.patchValue({
-          nome: aluno.nome,
-          email: aluno.email,
-          telefone: aluno.telefone,
-          dataNascimento: aluno.dataNascimento.slice(0, 10),
-          objetivo: aluno.objetivo,
-        });
-      } catch (erro) {
-        this.erro.set(erro instanceof Error ? erro.message : 'Não foi possível carregar o aluno.');
-
-        this.form.disable();
-      }
+  ngOnInit(): void {
+    const id = this.id();
+    if (id) {
+      this.form.disable();
+      this.alunosService.buscarPorId(id).subscribe({
+        next: (p) => {
+          this.form.patchValue({ ...p, dataNascimento: p.dataNascimento.slice(0, 10) });
+          this.form.enable();
+        },
+        error: (e: Error) => this.erro.set(e.message),
+      });
     }
   }
 
+  /** Mostra o erro só depois que o usuário mexeu no campo (touched). */
   protected invalido(campo: keyof typeof this.form.controls): boolean {
-    const controle = this.form.controls[campo];
-    return controle.invalid && controle.touched;
+    const c = this.form.controls[campo];
+    return c.invalid && (c.touched || c.dirty);
   }
 
   protected salvar(): void {
-    if (this.form.disabled) {
-      return;
-    }
-
-    this.erro.set('');
-
+    if (this.salvando() || this.form.disabled) return;
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       return;
     }
+    this.salvando.set(true);
+    this.erro.set(null);
 
-    const valores = this.form.getRawValue();
+    const dados = this.form.getRawValue() as AlunoEntrada;
+    const id = this.id();
+    const operacao = id ? this.alunosService.atualizar(id, dados) : this.alunosService.criar(dados);
 
-    if (valores.objetivo === '') {
-      return;
-    }
-
-    const entrada: AlunoEntrada = {
-      ...valores,
-      objetivo: valores.objetivo,
-    };
-
-    try {
-      if (this.id) {
-        this.alunosService.atualizar(this.id, entrada);
-      } else {
-        this.alunosService.criar(entrada);
-      }
-    } catch (erro) {
-      this.erro.set(erro instanceof Error ? erro.message : 'Não foi possível salvar o aluno.');
-      return;
-    }
-
-    void this.router.navigate(['/alunos'], {
-      queryParams: {
-        resultado: this.id ? 'editado' : 'cadastrado',
+    operacao.subscribe({
+      next: () => this.router.navigate(['/alunos'], { queryParams: { resultado: 'salvo' } }),
+      error: (e: Error) => {
+        this.erro.set(e.message);
+        this.salvando.set(false);
       },
     });
   }

@@ -4,5 +4,5 @@ export const environment = {
 
   // true  = usa os serviços MOCK (dados em memória, aulas 02 a 12)
   // false = usa os serviços que chamam a API de verdade (a partir da aula 13)
-  usarMock: true,
+  usarMock: false,
 };

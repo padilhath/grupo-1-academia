@@ -1,0 +1,15 @@
+<article class="cartao-produto">
+  <span class="etiqueta">{{ aluno().objetivo }}</span>
+  <h2>{{ aluno().nome }}</h2>
+  <p>{{ aluno().email }}</p>
+  <p>{{ aluno().telefone }}</p>
+  <p>Nascimento: {{ aluno().dataNascimento | date: 'dd/MM/yyyy' : 'UTC' }}</p>
+  <div class="acoes">
+    @if (auth.podeEditar()) {
+      <a class="botao secundario" [routerLink]="['/alunos', aluno()._id, 'editar']">Editar</a>
+    }
+    @if (auth.admin()) {
+      <button type="button" class="botao perigo" (click)="pedirExclusao()">Excluir</button>
+    }
+  </div>
+</article>

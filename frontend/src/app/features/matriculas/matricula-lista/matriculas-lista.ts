@@ -1,9 +1,10 @@
+import { AuthService } from '../../../core/auth/auth.service';
 import { DatePipe } from '@angular/common';
 import { Component, inject, OnInit, signal } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { textoDe } from '../../../core/models/referencia';
 import { Matricula, STATUS, Status, TRANSICOES } from '../matricula.model';
-import { MatriculasMockService } from '../services/matriculas-mock.service';
+import { MatriculasService } from '../services/matriculas.service';
 import { FormsModule } from '@angular/forms';
 import { MatriculaCard } from '../matricula-card/matricula-card';
 
@@ -13,7 +14,8 @@ import { MatriculaCard } from '../matricula-card/matricula-card';
   templateUrl: './matriculas-lista.html',
 })
 export class MatriculasLista implements OnInit {
-  private readonly matriculasService = inject(MatriculasMockService);
+  protected readonly auth = inject(AuthService);
+  private readonly matriculasService = inject(MatriculasService);
 
   protected readonly textoDe = textoDe;
   protected readonly status = STATUS;
@@ -31,7 +33,10 @@ export class MatriculasLista implements OnInit {
     cancelada: 'Cancelar',
   };
 
+  private readonly route = inject(ActivatedRoute);
   ngOnInit(): void {
+    if (this.route.snapshot.queryParamMap.get('resultado') === 'salvo')
+      this.sucesso.set('Matrícula salva com sucesso.');
     this.carregar();
   }
 
@@ -57,16 +62,14 @@ export class MatriculasLista implements OnInit {
   }
 
   protected mudarStatus(matricula: Matricula, novo: Status): void {
+    if (novo === 'cancelada' && !confirm('Cancelar esta matrícula?')) return;
     this.sucesso.set('');
     this.erro.set('');
 
     this.matriculasService.mudarStatus(matricula._id, novo).subscribe({
       next: () => {
-        this.matriculasService.listar().subscribe({
-          next: (lista) => {
-            this.matriculas.set(lista);
-          },
-        });
+        this.sucesso.set('Status da matrícula atualizado.');
+        this.carregar();
       },
       error: (erro) => {
         this.erro.set(
@@ -74,5 +77,8 @@ export class MatriculasLista implements OnInit {
         );
       },
     });
+  }
+  protected cancelar(matricula: Matricula): void {
+    this.mudarStatus(matricula, 'cancelada');
   }
 }

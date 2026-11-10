@@ -1,6 +1,9 @@
 <header class="topo">
   <span class="marca">{{ nomeSistema }}</span>
-  <!-- TODO (aula 12/13): nome do usuário logado e botão Sair -->
+  <div class="acoes">
+    <span>{{ auth.usuario()?.nome }} · {{ auth.usuario()?.perfil }}</span
+    ><button class="botao secundario" type="button" (click)="auth.logout()">Sair</button>
+  </div>
 </header>
 
 <div class="corpo">
@@ -12,6 +15,11 @@
     <a routerLink="/alunos" routerLinkActive="ativo">Alunos</a>
     <a routerLink="/planos" routerLinkActive="ativo">Planos</a>
     <a routerLink="/instrutores" routerLinkActive="ativo">Instrutores</a>
+    <a routerLink="/modalidades" routerLinkActive="ativo">Modalidades</a>
+    @if (auth.admin()) {
+      <a routerLink="/relatorios" routerLinkActive="ativo">Relatórios</a
+      ><a routerLink="/usuarios/novo" routerLinkActive="ativo">Novo usuário</a>
+    }
   </nav>
 
   <main class="conteudo">

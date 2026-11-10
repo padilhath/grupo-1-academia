@@ -41,7 +41,7 @@ export class ProdutosService {
   async criar(dto: CreateProdutoDto): Promise<Produto> {
     await this.garantirNomeUnico(dto.nome);
     const criado = await this.produtoModel.create(dto);
-    this.logger.log(`Produto criado: ${criado._id}`);
+    this.logger.log(`Produto criado: ${String(criado._id)}`);
     return criado.toObject();
   }
 

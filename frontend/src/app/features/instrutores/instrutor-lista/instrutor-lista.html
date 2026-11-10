@@ -1,13 +1,15 @@
 <div class="cabecalho-pagina">
   <h1>Instrutores</h1>
-  <a class="botao" routerLink="novo">Novo instrutor</a>
+  @if (auth.podeEditar()) {
+    <a class="botao" routerLink="novo">Novo instrutor</a>
+  }
 </div>
 
 <div class="barra-filtros">
-  <label for="filtro-categoria">Categoria</label>
+  <label for="filtro-categoria">Turno</label>
   <select id="filtro-categoria" [ngModel]="filtro()" (ngModelChange)="filtrar($event)">
     <option [ngValue]="null">Todas</option>
-    @for (c of duracaoMeses; track c) {
+    @for (c of turnos; track c) {
       <option [ngValue]="c">{{ c }}</option>
     }
   </select>
@@ -43,9 +45,8 @@
 @if (carregando()) {
   <p class="carregando">Carregando instrutores...</p>
 } @else if (instrutores().length === 0) {
-  <p class="vazio">Nenhum plano encontrado.</p>
+  <p class="vazio">Nenhum instrutor encontrado.</p>
 } @else if (modo() === 'cartoes') {
-  <!-- Componente filho reutilizável: o pai passa o plano e escuta o evento -->
   <div class="grade-cartoes">
     @for (p of instrutores(); track p._id) {
       <app-instrutor-card [instrutor]="p" (excluir)="excluir($event)" />
@@ -57,9 +58,10 @@
       <thead>
         <tr>
           <th>Nome</th>
-          <th>Duração (meses)</th>
-          <th>Preço</th>
-          <th>Modalidade</th>
+          <th>E-mail</th>
+          <th>Telefone</th>
+          <th>CREF</th>
+          <th>Turno</th>
           <th>Ações</th>
         </tr>
       </thead>
@@ -67,15 +69,18 @@
         @for (p of instrutores(); track p._id) {
           <tr>
             <td>{{ p.nome }}</td>
-            <td>
-              <span class="etiqueta">{{ p.nome }}</span>
-            </td>
-            <td class="numero">{{ p.email | currency: 'BRL' }}</td>
-            <td class="numero">{{ p.cref }}</td>
+            <td>{{ p.email }}</td>
+            <td>{{ p.telefone }}</td>
+            <td>{{ p.cref }}</td>
+            <td>{{ p.turno }}</td>
             <td>
               <div class="acoes">
-                <a class="botao secundario" [routerLink]="[p._id, 'editar']">Editar</a>
-                <button type="button" class="botao perigo" (click)="excluir(p)">Excluir</button>
+                @if (auth.podeEditar()) {
+                  <a class="botao secundario" [routerLink]="[p._id, 'editar']">Editar</a>
+                }
+                @if (auth.admin()) {
+                  <button type="button" class="botao perigo" (click)="excluir(p)">Excluir</button>
+                }
               </div>
             </td>
           </tr>

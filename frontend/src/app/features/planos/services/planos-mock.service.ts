@@ -1,16 +1,14 @@
-import { Injectable } from '@angular/core';
-import { delay, Observable, of, throwError } from 'rxjs';
-import { DuracaoMeses, Plano, PlanoEntrada } from '../plano.model';
+import { ModalidadesService } from '../../modalidades/services/modalidades.service';
+import { idDe } from '../../../core/models/referencia';
+import { inject, Injectable } from '@angular/core';
+import { defer, delay, Observable, of, map } from 'rxjs';
+import { Plano, PlanoEntrada, DuracaoMeses } from '../plano.model';
 import { PlanosService } from './planos.service';
 
-/**
- * Serviço MOCK: guarda os planos em memória e simula a API,
- * inclusive o tempo de resposta e as mesmas regras de negócio.
- * Usado enquanto o back-end ainda não existe (aulas 02 a 12).
- */
 @Injectable()
 export class PlanosMockService extends PlanosService {
-  private planos: Plano[] = [
+  private readonly modalidades = inject(ModalidadesService);
+  private itens: Plano[] = [
     {
       _id: '1',
       nome: 'Musculação trimestral',
@@ -19,44 +17,79 @@ export class PlanosMockService extends PlanosService {
       duracaoMeses: 3,
       ativo: true,
     },
+    {
+      _id: '2',
+      nome: 'Pilates semestral',
+      modalidade: '2',
+      valorMensal: 180,
+      duracaoMeses: 6,
+      ativo: true,
+    },
+    {
+      _id: '3',
+      nome: 'Spinning mensal',
+      modalidade: '3',
+      valorMensal: 120,
+      duracaoMeses: 1,
+      ativo: true,
+    },
   ];
-  private proximoId = 5;
-  private readonly atraso = 400; // ms, para enxergar o "carregando..."
+  private proximoId = 4;
 
-  listar(duracaoMeses?: DuracaoMeses): Observable<Plano[]> {
-    const lista = duracaoMeses
-      ? this.planos.filter((p) => p.duracaoMeses === duracaoMeses)
-      : this.planos;
-    return of([...lista].sort((a, b) => a.nome.localeCompare(b.nome))).pipe(delay(this.atraso));
+  listar(filtro?: DuracaoMeses, todos = false): Observable<Plano[]> {
+    return this.modalidades.listar(undefined, true).pipe(
+      map((modalidades) =>
+        this.itens
+          .filter((p) => (todos || p.ativo) && (!filtro || p.duracaoMeses === filtro))
+          .map((p) => ({
+            ...p,
+            modalidade: (() => {
+              const m = modalidades.find((m) => m._id === idDe(p.modalidade));
+              return m ? { _id: m._id, nome: m.nome } : p.modalidade;
+            })(),
+          }))
+          .sort((a, b) => a.nome.localeCompare(b.nome)),
+      ),
+    );
   }
-
   buscarPorId(id: string): Observable<Plano> {
-    const produto = this.planos.find((p) => p._id === id);
-    return produto
-      ? of({ ...produto }).pipe(delay(this.atraso))
-      : throwError(() => new Error(`Plano ${id} não encontrado`));
+    return defer(() => of({ ...this.encontrar(id) })).pipe(delay(400));
   }
-
   criar(dados: PlanoEntrada): Observable<Plano> {
-    if (this.planos.some((p) => p.nome === dados.nome)) {
-      return throwError(() => new Error(`Já existe um produto com o nome "${dados.nome}"`));
-    }
-    const novo: Plano = { ...dados, _id: String(this.proximoId++), ativo: dados.ativo ?? true };
-    this.planos.push(novo);
-    return of(novo).pipe(delay(this.atraso));
+    return defer(() => {
+      this.validar(dados);
+      const novo: Plano = { ...dados, _id: String(this.proximoId++), ativo: true };
+      this.itens.push(novo);
+      return of({ ...novo });
+    }).pipe(delay(400));
   }
-
   atualizar(id: string, dados: Partial<PlanoEntrada>): Observable<Plano> {
-    const indice = this.planos.findIndex((p) => p._id === id);
-    if (indice < 0) {
-      return throwError(() => new Error(`Plano ${id} não encontrado`));
-    }
-    this.planos[indice] = { ...this.planos[indice], ...dados };
-    return of(this.planos[indice]).pipe(delay(this.atraso));
+    return defer(() => {
+      const item = this.encontrar(id);
+      const novo = { ...item, ...dados };
+      this.validar({ ...novo, modalidade: idDe(novo.modalidade) }, id);
+      Object.assign(item, novo);
+      return of({ ...item });
+    }).pipe(delay(400));
   }
-
   remover(id: string): Observable<void> {
-    this.planos = this.planos.filter((p) => p._id !== id);
-    return of(undefined).pipe(delay(this.atraso));
+    return defer(() => {
+      this.encontrar(id).ativo = false;
+      return of(undefined);
+    }).pipe(delay(400));
+  }
+  private encontrar(id: string): Plano {
+    const item = this.itens.find((p) => p._id === id);
+    if (!item) throw new Error('Plano não encontrado.');
+    return item;
+  }
+  private validar(novo: PlanoEntrada, id?: string): void {
+    if (
+      this.itens.some(
+        (p) => p._id !== id && p.nome.toLocaleLowerCase() === novo.nome.toLocaleLowerCase(),
+      )
+    ) {
+      throw new Error('Já existe um registro com este nome.');
+    }
   }
 }
