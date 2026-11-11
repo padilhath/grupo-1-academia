@@ -5,9 +5,11 @@
   <p>{{ instrutor().telefone }}</p>
   <p>CREF: {{ instrutor().cref }}</p>
   <div class="acoes">
-    <a class="botao secundario" [routerLink]="['/instrutores', instrutor()._id, 'editar']"
-      >Editar</a
-    >
+    @if (auth.podeEditar()) {
+      <a class="botao secundario" [routerLink]="['/instrutores', instrutor()._id, 'editar']">
+        Editar
+      </a>
+    }
     @if (auth.admin()) {
       <button type="button" class="botao perigo" (click)="pedirExclusao()">Excluir</button>
     }
